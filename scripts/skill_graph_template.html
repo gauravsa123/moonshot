@@ -257,7 +257,7 @@ input[type="search"] {
   <header>
     <h1>AI Skills &amp; Projects</h1>
     <p class="subhead">A shared view of skills across projects. Node size shows linked-project coverage, not proficiency.</p>
-    <p class="notice" id="provenance-note">Source evidence documents methods in project material, not necessarily your individual contribution. Project requirements are not personal-experience claims.</p>
+    <!-- <p class="notice" id="provenance-note">Source evidence documents methods in project material, not necessarily your individual contribution. Project requirements are not personal-experience claims.</p> -->
     <div class="stats" id="stats" aria-live="polite"></div>
     <div class="notice" id="review-status" role="status"></div>
   </header>
@@ -273,13 +273,6 @@ input[type="search"] {
       <label><input type="checkbox" name="requirement"> Project requirements</label>
     </fieldset>
     <div class="small muted" id="match-status" aria-live="polite"></div>
-  </section>
-  <section class="drop-zone" id="drop-zone" aria-label="Load Markdown notes">
-    <span>Drop a self-contained set of project and skill Markdown notes to preview their graph; source notes are not required.</span>
-    <label class="file-picker">Choose Markdown notes
-      <input id="md-files" type="file" accept=".md,text/markdown" multiple>
-    </label>
-    <span class="load-status" id="load-status" role="status"></span>
   </section>
   <div class="workspace">
     <section class="panel graph-panel" aria-label="Skills, projects, and publications network">
@@ -300,6 +293,13 @@ input[type="search"] {
     </section>
     <aside class="panel detail" id="detail" aria-live="polite" aria-label="Selection details"></aside>
   </div>
+  <section class="drop-zone" id="drop-zone" aria-label="Load Markdown notes">
+    <!-- <span>Drop a self-contained set of project and skill Markdown notes to preview their graph; source notes are not required.</span> -->
+    <label class="file-picker">Choose Markdown notes
+      <input id="md-files" type="file" accept=".md,text/markdown" multiple>
+    </label>
+    <span class="load-status" id="load-status" role="status"></span>
+  </section>
 </main>
 <script id="graph-data" type="application/json">__GRAPH_DATA_JSON__</script>
 <script>
@@ -612,9 +612,9 @@ function updateStats() {
   }, {});
   const review = document.getElementById("review-status");
   const needsReview = inventoryCounts["needs review"] || 0;
-  review.textContent = needsReview
-    ? `${needsReview} source records still need review. The graph does not imply they were fully reviewed.`
-    : `Source review status: ${JSON.stringify(inventoryCounts)}.`;
+  // review.textContent = needsReview
+  //   ? `${needsReview} source records still need review. The graph does not imply they were fully reviewed.`
+  //   : `Source review status: ${JSON.stringify(inventoryCounts)}.`;
   renderWelcome();
 }
 
