@@ -12,8 +12,9 @@ by the graph; exclude repository content outside `wiki/`, including `raw/`.
 Use GitHub Actions to deploy the existing `wiki/` directory as the Pages
 artifact root. The workflow will:
 
-1. Run on pushes to `main` that change wiki files, graph-builder inputs, or the
-   workflow itself, and support manual dispatch.
+1. Run only on pushes to `main` that change wiki files, graph-builder inputs,
+   or the workflow itself. Manual dispatch is intentionally omitted so a
+   workflow definition selected from a non-main branch cannot deploy the site.
 2. Run `python3 scripts/build_skill_graph.py` from the repository root so the
    published graph is regenerated from the current wiki.
 3. Upload `wiki/` as the artifact root and deploy it using GitHub Pages Actions.
@@ -48,13 +49,14 @@ be presented as plain Markdown by the browser.
 Use GitHub Pages Actions rather than branch-root publishing. Grant only the
 Pages deployment permissions required by the official Pages Actions flow, use
 the `github-pages` deployment environment, and prevent overlapping deployments
-with workflow concurrency. Configure the repository's Pages source as
+with workflow concurrency. Since only `main` pushes trigger deployment, do not
+add a manual dispatch trigger. Configure the repository's Pages source as
 **GitHub Actions** once before the first successful deployment.
 
 ## Validation
 
-- Parse/check the workflow and confirm triggers include wiki and graph-builder
-  inputs.
+- Parse/check the workflow and confirm only `main` pushes to wiki and
+  graph-builder paths trigger publishing; no manual dispatch event is present.
 - Run the existing graph builder and confirm it succeeds.
 - Confirm the Pages artifact contains the wiki tree with the graph at its root
   and does not contain repository paths outside `wiki/`.
