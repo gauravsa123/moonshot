@@ -1,0 +1,1468 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>AI Skills &amp; Projects</title>
+<style>
+:root {
+  color-scheme: light;
+  --page: #f4f7fb;
+  --panel: #ffffff;
+  --canvas: #f8faff;
+  --ink: #17243a;
+  --muted: #53647b;
+  --line: #d7e0eb;
+  --project: #167d9a;
+  --skill: #7047c7;
+  --documented: #7047c7;
+  --inferred: #966fe5;
+  --unknown: #727f90;
+  --user: #16845a;
+  --requirement: #c06a18;
+  --focus: #155eef;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --page: #111827;
+    --panel: #182233;
+    --canvas: #121c2c;
+    --ink: #edf2fa;
+    --muted: #a7b5c8;
+    --line: #34445b;
+    --project: #49bed1;
+    --skill: #b495ff;
+    --documented: #b495ff;
+    --inferred: #9c7ce7;
+    --unknown: #9aa8ba;
+    --user: #52d49b;
+    --requirement: #ffb454;
+    --focus: #82b1ff;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+a { color: var(--focus); text-underline-offset: 2px; }
+main { max-width: 1600px; margin: 0 auto; padding: 22px; }
+h1, h2, h3, p { margin-top: 0; }
+h1 { margin-bottom: 3px; font-size: clamp(1.55rem, 3vw, 2.25rem); letter-spacing: -.025em; }
+h2 { margin-bottom: 8px; font-size: 1.1rem; }
+h3 { margin: 18px 0 7px; font-size: .96rem; }
+.muted, .subhead { color: var(--muted); }
+.subhead { margin-bottom: 14px; }
+.notice {
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--requirement);
+  border-radius: 9px;
+  background: var(--panel);
+  padding: 10px 13px;
+  margin: 0 0 15px;
+  color: var(--muted);
+}
+.toolbar, .panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.toolbar {
+  display: grid;
+  grid-template-columns: minmax(190px, 1fr) auto;
+  gap: 14px 18px;
+  align-items: center;
+  padding: 13px;
+}
+.search-wrap { display: grid; gap: 4px; }
+.search-wrap label { font-size: .82rem; color: var(--muted); }
+input[type="search"] {
+  width: 100%;
+  min-height: 42px;
+  padding: 8px 11px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+}
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+.filters legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+.filters label, .toolbar button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 38px;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  font-size: .86rem;
+}
+.drop-zone {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px 14px;
+  align-items: center;
+  margin: 10px 0 13px;
+  padding: 10px 13px;
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  color: var(--muted);
+}
+.drop-zone.dragging { border-color: var(--focus); background: var(--panel); }
+.file-picker {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--ink);
+  cursor: pointer;
+}
+.file-picker input { max-width: 220px; }
+.load-status { grid-column: 1 / -1; min-height: 1.2em; font-size: .83rem; }
+.load-status.error { color: #c0362c; font-weight: 650; }
+.filters input { accent-color: var(--focus); }
+.stats { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.stat {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  padding: 4px 10px;
+  font-size: .83rem;
+  color: var(--muted);
+}
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) minmax(285px, .8fr);
+  gap: 14px;
+  align-items: start;
+}
+.graph-panel { overflow: hidden; }
+.graph-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  padding: 12px 14px 0;
+}
+.graph-heading h2 { margin: 0; }
+.graph-heading span { color: var(--muted); font-size: .8rem; }
+#graph {
+  display: block;
+  width: 100%;
+  height: min(70vh, 760px);
+  min-height: 440px;
+  background: var(--canvas);
+  touch-action: none;
+  outline: none;
+}
+#graph:focus-visible { box-shadow: inset 0 0 0 3px var(--focus); }
+.detail { padding: 17px; min-height: 430px; }
+.detail-head { display: flex; justify-content: space-between; gap: 10px; align-items: start; }
+.detail h2 { overflow-wrap: anywhere; }
+.detail-group { border-top: 1px solid var(--line); padding-top: 2px; margin-top: 14px; }
+.detail-card {
+  margin: 8px 0;
+  padding: 9px 11px;
+  border-left: 3px solid var(--line);
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--panel) 82%, var(--canvas));
+  overflow-wrap: anywhere;
+}
+.detail-card.documented { border-left-color: var(--documented); }
+.detail-card.inferred { border-left-color: var(--inferred); }
+.detail-card.unknown { border-left-color: var(--unknown); }
+.detail-card.user_reported { border-left-color: var(--user); }
+.detail-card.requirement { border-left-color: var(--requirement); }
+.detail-card p { margin: 4px 0; }
+.detail-select {
+  max-width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--focus);
+  text-align: left;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  overflow-wrap: anywhere;
+}
+.badge {
+  display: inline-block;
+  padding: 1px 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: .76rem;
+  color: var(--muted);
+}
+.legend { display: flex; flex-wrap: wrap; gap: 8px 13px; padding: 10px 14px 13px; }
+.legend-item { display: inline-flex; gap: 7px; align-items: center; font-size: .78rem; color: var(--muted); }
+.swatch { display: inline-block; width: 20px; height: 0; border-top: 3px solid; }
+.swatch.inferred { border-top-style: dashed; }
+.swatch.unknown { border-top-style: dotted; }
+.swatch.user_reported { border-color: var(--user); }
+.swatch.requirement { border-color: var(--requirement); border-top-style: dashed; }
+.swatch.documented { border-color: var(--documented); }
+.warning { color: var(--requirement); font-weight: 650; }
+.empty { color: var(--muted); font-style: italic; }
+.small { font-size: .84rem; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+@media (max-width: 900px) {
+  main { padding: 14px; }
+  .workspace { grid-template-columns: 1fr; }
+  .toolbar { grid-template-columns: 1fr; }
+  #graph { height: 62vh; min-height: 360px; }
+  .detail { min-height: 220px; }
+}
+@media (max-width: 520px) {
+  .filters { display: grid; grid-template-columns: 1fr 1fr; }
+  .filters label { font-size: .78rem; }
+  #graph { min-height: 320px; }
+  .drop-zone { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>AI Skills &amp; Projects</h1>
+    <p class="subhead">A shared view of skills across projects. Node size shows linked-project coverage, not proficiency.</p>
+    <p class="notice" id="provenance-note">Source evidence documents methods in project material, not necessarily your individual contribution. Project requirements are not personal-experience claims.</p>
+    <div class="stats" id="stats" aria-live="polite"></div>
+    <div class="notice" id="review-status" role="status"></div>
+  </header>
+  <section class="toolbar" aria-label="Graph controls">
+    <div class="search-wrap">
+      <label for="search">Search skills and projects</label>
+      <input id="search" type="search" placeholder="Search a skill, project, or alias">
+    </div>
+    <fieldset class="filters">
+      <legend>Show relationship types</legend>
+      <label><input type="checkbox" name="source_evidence" checked> Source evidence</label>
+      <label><input type="checkbox" name="user_reported" checked> User-reported</label>
+      <label><input type="checkbox" name="requirement"> Project requirements</label>
+    </fieldset>
+    <div class="small muted" id="match-status" aria-live="polite"></div>
+  </section>
+  <section class="drop-zone" id="drop-zone" aria-label="Load Markdown notes">
+    <span>Drop a self-contained set of project and skill Markdown notes to preview their graph; source notes are not required.</span>
+    <label class="file-picker">Choose Markdown notes
+      <input id="md-files" type="file" accept=".md,text/markdown" multiple>
+    </label>
+    <span class="load-status" id="load-status" role="status"></span>
+  </section>
+  <div class="workspace">
+    <section class="panel graph-panel" aria-label="Skill and project network">
+      <div class="graph-heading">
+        <h2>Network</h2>
+        <span id="canvas-instructions">Focus the graph, then use arrow keys to move between connected nodes.</span>
+      </div>
+      <canvas id="graph" tabindex="0" role="img" aria-label="Interactive graph of AI skills and projects" aria-describedby="canvas-instructions"></canvas>
+      <div class="legend" aria-label="Relationship legend">
+        <span class="legend-item"><i class="swatch documented"></i> Documented</span>
+        <span class="legend-item"><i class="swatch inferred"></i> Inferred</span>
+        <span class="legend-item"><i class="swatch unknown"></i> Unknown</span>
+        <span class="legend-item"><i class="swatch user_reported"></i> User-reported</span>
+        <span class="legend-item"><i class="swatch requirement"></i> Requirement</span>
+      </div>
+    </section>
+    <aside class="panel detail" id="detail" aria-live="polite" aria-label="Selection details"></aside>
+  </div>
+</main>
+<script id="graph-data" type="application/json">__GRAPH_DATA_JSON__</script>
+<script>
+"use strict";
+let DATA = JSON.parse(document.getElementById("graph-data").textContent);
+const canvas = document.getElementById("graph");
+const ctx = canvas.getContext("2d");
+const searchInput = document.getElementById("search");
+const matchStatus = document.getElementById("match-status");
+const detail = document.getElementById("detail");
+const filters = Object.fromEntries(
+  [...document.querySelectorAll(".filters input")].map(input => [input.name, input])
+);
+let nodes = DATA.nodes.map((node, index) => ({...node, x: 0, y: 0, vx: 0, vy: 0, index}));
+let nodeById = new Map(nodes.map(node => [node.id, node]));
+let edges = DATA.edges.map(edge => ({...edge, sourceNode: nodeById.get(edge.source), targetNode: nodeById.get(edge.target)}));
+const BASE_SOURCE_INVENTORY = DATA.source_inventory.map(row => ({...row}));
+const BASE_SKILL_ALIAS_BY_PATH = new Map();
+for (const node of DATA.nodes.filter(item => item.type === "skill")) {
+  for (const page of node.pages) {
+    BASE_SKILL_ALIAS_BY_PATH.set(page.path, {id: node.id, label: node.label});
+  }
+}
+let width = 0;
+let height = 0;
+let pixelRatio = 1;
+let alpha = 1;
+let hoveredId = null;
+let selectedId = null;
+let keyboardFocusId = null;
+let searchMatches = new Set();
+let searchNeighbors = new Set();
+let focusNeighbors = new Set();
+let panX = 0;
+let panY = 0;
+let zoom = 1;
+let gesture = null;
+
+function hashText(text) {
+  let hash = 2166136261;
+  for (const char of text) hash = Math.imul(hash ^ char.charCodeAt(0), 16777619);
+  return hash >>> 0;
+}
+
+function sizeCanvas() {
+  const rect = canvas.getBoundingClientRect();
+  const oldWidth = width || rect.width;
+  const oldHeight = height || rect.height;
+  width = rect.width;
+  height = rect.height;
+  pixelRatio = Math.max(1, window.devicePixelRatio || 1);
+  canvas.width = Math.round(width * pixelRatio);
+  canvas.height = Math.round(height * pixelRatio);
+  ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+  if (!nodes.some(node => node.x || node.y)) {
+    const radius = Math.min(width, height) * .31;
+    nodes.forEach((node, index) => {
+      const seed = hashText(node.id);
+      const angle = index * 2.399963 + (seed % 1000) / 1000;
+      const distance = radius * Math.sqrt((index + 1) / Math.max(1, nodes.length));
+      node.x = width / 2 + Math.cos(angle) * distance;
+      node.y = height / 2 + Math.sin(angle) * distance;
+    });
+  } else {
+    panX += (width - oldWidth) / 2;
+    panY += (height - oldHeight) / 2;
+  }
+  alpha = Math.max(alpha, .35);
+}
+
+function visibleEdges() {
+  return edges.filter(edge => filters[edge.kind]?.checked);
+}
+
+function visibleNodeIds() {
+  const ids = new Set();
+  for (const edge of visibleEdges()) {
+    ids.add(edge.source);
+    ids.add(edge.target);
+  }
+  if (selectedId) ids.add(selectedId);
+  if (hoveredId) ids.add(hoveredId);
+  for (const id of searchMatches) ids.add(id);
+  for (const id of searchNeighbors) ids.add(id);
+  for (const id of focusNeighbors) ids.add(id);
+  return ids;
+}
+
+function neighborsOf(nodeId) {
+  const neighbors = new Set();
+  for (const edge of visibleEdges()) {
+    if (edge.source === nodeId) neighbors.add(edge.target);
+    if (edge.target === nodeId) neighbors.add(edge.source);
+  }
+  return neighbors;
+}
+
+function updateFocusNeighbors(nodeId) {
+  focusNeighbors = nodeId ? neighborsOf(nodeId) : new Set();
+}
+
+function linkedProjectCounts() {
+  const countBySkill = new Map();
+  for (const edge of visibleEdges()) {
+    if (edge.targetNode?.type === "skill") {
+      const projects = countBySkill.get(edge.target) || new Set();
+      projects.add(edge.source);
+      countBySkill.set(edge.target, projects);
+    }
+  }
+  return countBySkill;
+}
+
+function nodeRadius(node, counts) {
+  if (node.type === "project") return 7;
+  const count = counts.get(node.id)?.size || 0;
+  return 4 + Math.min(5, Math.sqrt(count) * 1.5);
+}
+
+function edgeStyle(edge, style) {
+  if (edge.kind === "user_reported") return {color: style.getPropertyValue("--user").trim(), dash: []};
+  if (edge.kind === "requirement") return {color: style.getPropertyValue("--requirement").trim(), dash: [5, 4]};
+  if (edge.status === "documented") return {color: style.getPropertyValue("--documented").trim(), dash: []};
+  if (edge.status === "inferred") return {color: style.getPropertyValue("--inferred").trim(), dash: [7, 4]};
+  return {color: style.getPropertyValue("--unknown").trim(), dash: [2, 4]};
+}
+
+function forceTick() {
+  const activeIds = visibleNodeIds();
+  const activeNodes = nodes.filter(node => activeIds.has(node.id));
+  const activeEdges = visibleEdges();
+  for (let left = 0; left < activeNodes.length; left += 1) {
+    const a = activeNodes[left];
+    for (let right = left + 1; right < activeNodes.length; right += 1) {
+      const b = activeNodes[right];
+      const dx = b.x - a.x;
+      const dy = b.y - a.y;
+      const distanceSquared = dx * dx + dy * dy;
+      if (distanceSquared > 90000) continue;
+      const distance = Math.sqrt(distanceSquared) || .01;
+      const force = (150 * alpha) / (distanceSquared + 100);
+      a.vx -= (dx / distance) * force;
+      a.vy -= (dy / distance) * force;
+      b.vx += (dx / distance) * force;
+      b.vy += (dy / distance) * force;
+    }
+  }
+  for (const edge of activeEdges) {
+    const a = edge.sourceNode;
+    const b = edge.targetNode;
+    if (!a || !b) continue;
+    const dx = b.x - a.x;
+    const dy = b.y - a.y;
+    const distance = Math.sqrt(dx * dx + dy * dy) || .01;
+    const force = (distance - 85) * .002 * alpha;
+    const fx = (dx / distance) * force;
+    const fy = (dy / distance) * force;
+    a.vx += fx;
+    a.vy += fy;
+    b.vx -= fx;
+    b.vy -= fy;
+  }
+  for (const node of activeNodes) {
+    node.vx += (width / 2 - node.x) * .0004 * alpha;
+    node.vy += (height / 2 - node.y) * .0004 * alpha;
+    node.vx *= .82;
+    node.vy *= .82;
+    node.x += node.vx;
+    node.y += node.vy;
+  }
+  alpha = Math.max(.03, alpha * .996);
+}
+
+function drawNode(node, focused, matches, counts, style) {
+  const radius = nodeRadius(node, counts);
+  const color = node.type === "project"
+    ? style.getPropertyValue("--project").trim()
+    : style.getPropertyValue("--skill").trim();
+  const dim = (focused && node.id !== focused && !focusNeighbors.has(node.id)
+    && !searchNeighbors.has(node.id))
+    || (searchMatches.size && !matches && !searchNeighbors.has(node.id)
+      && !focusNeighbors.has(node.id));
+  ctx.globalAlpha = dim ? .12 : 1;
+  ctx.shadowColor = color;
+  ctx.shadowBlur = node.id === selectedId || node.id === hoveredId ? 18 : 9;
+  ctx.fillStyle = color;
+  ctx.strokeStyle = color;
+  if (node.type === "project") {
+    ctx.beginPath();
+    ctx.arc(node.x, node.y, radius + 2, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.fillRect(node.x - radius * .65, node.y - radius * .65, radius * 1.3, radius * 1.3);
+  } else {
+    ctx.beginPath();
+    ctx.arc(node.x, node.y, radius, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  const zoomed = zoom >= 1.7;
+  if (node.type === "project" || node.id === hoveredId || node.id === selectedId || matches || zoomed) {
+    const text = node.label.length > 30 ? `${node.label.slice(0, 28)}...` : node.label;
+    ctx.font = `${node.id === selectedId ? 650 : 500} 11px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+    ctx.textAlign = "left";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = style.getPropertyValue("--ink").trim();
+    ctx.fillText(text, node.x + radius + 5, node.y);
+  }
+  ctx.shadowBlur = 0;
+  ctx.globalAlpha = 1;
+}
+
+function draw() {
+  const style = getComputedStyle(document.documentElement);
+  ctx.clearRect(0, 0, width, height);
+  ctx.save();
+  ctx.translate(panX, panY);
+  ctx.scale(zoom, zoom);
+  const visibleIds = visibleNodeIds();
+  const activeEdges = visibleEdges().filter(edge => visibleIds.has(edge.source) && visibleIds.has(edge.target));
+  const edgeGroups = new Map();
+  for (const edge of activeEdges) {
+    const key = [edge.source, edge.target].sort().join("\u0000");
+    const group = edgeGroups.get(key) || [];
+    group.push(edge);
+    edgeGroups.set(key, group);
+  }
+  for (const group of edgeGroups.values()) {
+    group.forEach((edge, index) => {
+      const offset = (index - (group.length - 1) / 2) * 6;
+      const a = edge.sourceNode;
+      const b = edge.targetNode;
+      const dx = b.x - a.x;
+      const dy = b.y - a.y;
+      const length = Math.sqrt(dx * dx + dy * dy) || 1;
+      const styleForEdge = edgeStyle(edge, style);
+      const focused = hoveredId || selectedId;
+      const dim = focused && edge.source !== focused && edge.target !== focused
+        && !focusNeighbors.has(edge.source) && !focusNeighbors.has(edge.target)
+        && !searchNeighbors.has(edge.source) && !searchNeighbors.has(edge.target);
+      ctx.globalAlpha = dim ? .1 : .72;
+      ctx.strokeStyle = styleForEdge.color;
+      ctx.lineWidth = edge.source === selectedId || edge.target === selectedId ? 2 : 1.2;
+      ctx.setLineDash(styleForEdge.dash);
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y);
+      ctx.quadraticCurveTo(
+        (a.x + b.x) / 2 - (dy / length) * offset,
+        (a.y + b.y) / 2 + (dx / length) * offset,
+        b.x,
+        b.y
+      );
+      ctx.stroke();
+    });
+  }
+  ctx.setLineDash([]);
+  const counts = linkedProjectCounts();
+  for (const node of nodes) {
+    if (!visibleIds.has(node.id)) continue;
+    drawNode(node, hoveredId || selectedId, searchMatches.has(node.id), counts, style);
+  }
+  ctx.restore();
+  ctx.globalAlpha = 1;
+  if (!visibleIds.size) {
+    ctx.fillStyle = style.getPropertyValue("--muted").trim();
+    ctx.font = '14px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("No visible relationships. Enable a filter or search.", width / 2, height / 2);
+  }
+}
+
+function frame() {
+  forceTick();
+  draw();
+  requestAnimationFrame(frame);
+}
+
+function updateStats() {
+  const counts = DATA.counts;
+  const stats = document.getElementById("stats");
+  const items = [
+    `${counts.projects} projects`,
+    `${counts.canonical_skills} canonical skills`,
+    `${DATA.edges.length} total relationships`,
+  ];
+  stats.replaceChildren(...items.map(text => {
+    const item = document.createElement("span");
+    item.className = "stat";
+    item.textContent = text;
+    return item;
+  }));
+  const inventoryCounts = DATA.source_inventory.reduce((result, row) => {
+    result[row.status] = (result[row.status] || 0) + 1;
+    return result;
+  }, {});
+  const review = document.getElementById("review-status");
+  const needsReview = inventoryCounts["needs review"] || 0;
+  review.textContent = needsReview
+    ? `${needsReview} source records still need review. The graph does not imply they were fully reviewed.`
+    : `Source review status: ${JSON.stringify(inventoryCounts)}.`;
+  renderWelcome();
+}
+
+function element(tag, className, text) {
+  const item = document.createElement(tag);
+  if (className) item.className = className;
+  if (text !== undefined) item.textContent = text;
+  return item;
+}
+
+function safeWikiHref(href) {
+  if (typeof href !== "string" || !href || href.startsWith("//")
+    || /^[a-z][a-z0-9+.-]*:/i.test(href)) {
+    throw new Error(`Invalid local wiki link: ${String(href)}`);
+  }
+  const current = new URL(window.location.href);
+  const target = new URL(href, current);
+  const baseDirectory = current.pathname.slice(0, current.pathname.lastIndexOf("/") + 1);
+  if (target.protocol !== current.protocol || target.origin !== current.origin
+    || !target.pathname.startsWith(baseDirectory)) {
+    throw new Error(`Wiki link escapes the graph directory: ${href}`);
+  }
+  return target.href;
+}
+
+function appendWikiLink(parent, text, href) {
+  const safeHref = safeWikiHref(href);
+  if (!safeHref) {
+    parent.append(element("span", "", text));
+    return;
+  }
+  const link = element("a", "", text);
+  link.href = safeHref;
+  parent.append(link);
+}
+
+function appendEvidence(parent, evidence) {
+  if (!Array.isArray(evidence) || !evidence.length) return;
+  const list = element("div", "small");
+  list.append(element("strong", "", "Evidence: "));
+  evidence.forEach((citation, index) => {
+    if (index) list.append(document.createTextNode("; "));
+    appendWikiLink(list, citation.label || citation.href || "Source", citation.href);
+  });
+  parent.append(list);
+}
+
+function renderWelcome() {
+  detail.replaceChildren();
+  const heading = document.createElement("h2");
+  heading.textContent = "Explore the graph";
+  const instructions = document.createElement("p");
+  instructions.className = "empty";
+  instructions.textContent = "Select a node to inspect its wiki links, provenance, and evidence.";
+  detail.append(heading, instructions);
+}
+
+const KIND_LABELS = {
+  source_evidence: "Source evidence",
+  user_reported: "User-reported use",
+  requirement: "Project requirement",
+};
+
+function linkedNodeButton(parent, nodeId) {
+  const node = nodeById.get(nodeId);
+  if (!node) return;
+  const button = element("button", "detail-select", node.label);
+  button.type = "button";
+  button.addEventListener("click", () => selectNode(node.id));
+  parent.append(button);
+}
+
+function appendRelationshipCard(parent, edge, currentNode) {
+  const card = element("article", `detail-card ${edge.kind}`);
+  const partnerId = edge.source === currentNode.id ? edge.target : edge.source;
+  const partner = nodeById.get(partnerId);
+  const status = element("p", "");
+  status.append(element("span", "badge", `${KIND_LABELS[edge.kind]} - ${edge.status}`));
+  card.append(status);
+  if (partner) {
+    const connection = element("p", "");
+    connection.append(document.createTextNode("Connected to "));
+    linkedNodeButton(connection, partner.id);
+    card.append(connection);
+  }
+  if (edge.rationale) card.append(element("p", "", edge.rationale));
+  appendEvidence(card, edge.evidence);
+  parent.append(card);
+}
+
+function appendUnmappedClaim(parent, claim) {
+  const card = element("article", `detail-card ${claim.kind || ""}`);
+  card.append(element("p", "", claim.claim || "Unmapped project claim"));
+  if (claim.status) card.append(element("span", "badge", claim.status));
+  if (claim.details) card.append(element("p", "", claim.details));
+  appendEvidence(card, claim.evidence);
+  parent.append(card);
+}
+
+function appendSection(parent, title, content) {
+  const section = element("section", "detail-group");
+  section.append(element("h3", "", title));
+  content(section);
+  parent.append(section);
+}
+
+function renderDetail(node) {
+  detail.replaceChildren();
+  const heading = element("h2", "", node.label);
+  const header = element("div", "detail-head");
+  header.append(heading, element("span", "badge", node.type === "project" ? "Project" : "Skill"));
+  detail.append(header);
+
+  if (node.type === "project") {
+    const page = element("p", "small");
+    appendWikiLink(page, "Open project page", node.href);
+    detail.append(page);
+  } else {
+    for (const pageData of node.pages) {
+      appendSection(detail, pageData.title, section => {
+        section.append(element("p", "small", pageData.definition || "No definition recorded."));
+        const link = element("p", "small");
+        appendWikiLink(link, "Open skill page", pageData.href);
+        section.append(link);
+        if (pageData.aliases?.length) {
+          section.append(element("p", "small muted", `Also known as: ${pageData.aliases.join(", ")}`));
+        }
+      });
+    }
+  }
+
+  const related = edges.filter(edge => edge.source === node.id || edge.target === node.id);
+  for (const kind of ["user_reported", "source_evidence", "requirement"]) {
+    const relationships = related.filter(edge => edge.kind === kind);
+    appendSection(detail, `${KIND_LABELS[kind]} (${relationships.length})`, section => {
+      if (!relationships.length) {
+        const emptyText = kind === "user_reported"
+          ? "No user-reported use recorded."
+          : `No ${KIND_LABELS[kind].toLowerCase()} links recorded.`;
+        section.append(element("p", "empty", emptyText));
+        return;
+      }
+      relationships.forEach(edge => appendRelationshipCard(section, edge, node));
+    });
+  }
+
+  if (node.type === "project" && node.source_reviews.length) {
+    appendSection(detail, `Source review status (${node.source_reviews.length})`, section => {
+      for (const source of node.source_reviews) {
+        const card = element("article", "detail-card");
+        const title = source.source_path || source.page_path;
+        card.append(element("p", "", title));
+        card.append(element("span", `badge ${source.status === "needs review" ? "warning" : ""}`, source.status));
+        if (source.reason) card.append(element("p", "", source.reason));
+        const link = element("p", "small");
+        appendWikiLink(link, "Open source record", source.page_path);
+        card.append(link);
+        section.append(card);
+      }
+    });
+  }
+
+  if (node.type === "project" && node.unmapped_claims.length) {
+    appendSection(detail, `Not mapped to a canonical skill (${node.unmapped_claims.length})`, section => {
+      node.unmapped_claims.forEach(claim => appendUnmappedClaim(section, claim));
+    });
+  }
+
+  if (node.type === "project" && node.data_quality_notes.length) {
+    appendSection(detail, `Wiki data-quality notes (${node.data_quality_notes.length})`, section => {
+      for (const note of node.data_quality_notes) {
+        const card = element("article", "detail-card unknown");
+        card.append(element("p", "", `${note.section}: ${note.claim}`));
+        card.append(element("span", "badge", note.status));
+        if (note.details) card.append(element("p", "", note.details));
+        appendEvidence(card, note.evidence);
+        section.append(card);
+      }
+    });
+  }
+}
+
+function selectNode(nodeId) {
+  if (!nodeById.has(nodeId)) return;
+  selectedId = nodeId;
+  keyboardFocusId = nodeId;
+  hoveredId = null;
+  updateFocusNeighbors(nodeId);
+  renderDetail(nodeById.get(nodeId));
+  alpha = Math.max(alpha, .35);
+  draw();
+}
+
+function updateSearch() {
+  const query = searchInput.value.trim().toLocaleLowerCase();
+  searchMatches = new Set();
+  searchNeighbors = new Set();
+  if (query) {
+    for (const node of nodes) {
+      const values = [node.label, node.title, ...node.search_terms];
+      if (node.pages) {
+        for (const page of node.pages) values.push(page.title, page.definition, ...page.aliases);
+      }
+      if (values.some(value => value?.toLocaleLowerCase().includes(query))) {
+        searchMatches.add(node.id);
+      }
+    }
+    for (const id of searchMatches) {
+      for (const neighbor of neighborsOf(id)) searchNeighbors.add(neighbor);
+    }
+  }
+  matchStatus.textContent = query
+    ? `${searchMatches.size} matching ${searchMatches.size === 1 ? "node" : "nodes"}; neighboring nodes are highlighted.`
+    : "";
+  alpha = Math.max(alpha, .35);
+  draw();
+}
+
+function canvasPoint(event) {
+  const rect = canvas.getBoundingClientRect();
+  return {x: event.clientX - rect.left, y: event.clientY - rect.top};
+}
+
+function findNodeAt(screenX, screenY) {
+  const x = (screenX - panX) / zoom;
+  const y = (screenY - panY) / zoom;
+  const visible = visibleNodeIds();
+  const counts = linkedProjectCounts();
+  let found = null;
+  let bestDistance = Infinity;
+  for (const node of nodes) {
+    if (!visible.has(node.id)) continue;
+    const dx = node.x - x;
+    const dy = node.y - y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    if (distance <= nodeRadius(node, counts) + 8 && distance < bestDistance) {
+      found = node;
+      bestDistance = distance;
+    }
+  }
+  return found;
+}
+
+function refreshFocus() {
+  updateFocusNeighbors(selectedId || hoveredId);
+  updateSearch();
+}
+
+function handlePointerDown(event) {
+  if (event.button !== 0) return;
+  canvas.focus({preventScroll: true});
+  const point = canvasPoint(event);
+  const node = findNodeAt(point.x, point.y);
+  gesture = {
+    pointerId: event.pointerId,
+    mode: node ? "node" : "pan",
+    nodeId: node?.id || null,
+    startX: point.x,
+    startY: point.y,
+    lastX: point.x,
+    lastY: point.y,
+    moved: false,
+  };
+  canvas.setPointerCapture(event.pointerId);
+  if (node) {
+    hoveredId = node.id;
+    updateFocusNeighbors(node.id);
+  } else {
+    canvas.style.cursor = "grabbing";
+  }
+  draw();
+}
+
+function handlePointerMove(event) {
+  const point = canvasPoint(event);
+  if (gesture && gesture.pointerId === event.pointerId) {
+    if (Math.hypot(point.x - gesture.startX, point.y - gesture.startY) > 4) gesture.moved = true;
+    if (gesture.mode === "node") {
+      const node = nodeById.get(gesture.nodeId);
+      if (node) {
+        node.x = (point.x - panX) / zoom;
+        node.y = (point.y - panY) / zoom;
+        node.vx = 0;
+        node.vy = 0;
+        alpha = Math.max(alpha, .35);
+      }
+    } else {
+      panX += point.x - gesture.lastX;
+      panY += point.y - gesture.lastY;
+    }
+    gesture.lastX = point.x;
+    gesture.lastY = point.y;
+    draw();
+    return;
+  }
+  const node = findNodeAt(point.x, point.y);
+  const nextId = node?.id || null;
+  if (nextId !== hoveredId) {
+    hoveredId = nextId;
+    updateFocusNeighbors(nextId || selectedId);
+    canvas.style.cursor = nextId ? "pointer" : "";
+    draw();
+  }
+}
+
+function handlePointerUp(event) {
+  if (!gesture || gesture.pointerId !== event.pointerId) return;
+  const current = gesture;
+  gesture = null;
+  if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
+  canvas.style.cursor = hoveredId ? "pointer" : "";
+  if (current.mode === "node" && !current.moved) selectNode(current.nodeId);
+}
+
+function handleWheel(event) {
+  event.preventDefault();
+  const point = canvasPoint(event);
+  const worldX = (point.x - panX) / zoom;
+  const worldY = (point.y - panY) / zoom;
+  zoom = Math.max(.35, Math.min(3.5, zoom * Math.exp(-event.deltaY * .001)));
+  panX = point.x - worldX * zoom;
+  panY = point.y - worldY * zoom;
+  draw();
+}
+
+function handleGraphKey(event) {
+  if (event.key === "Enter") {
+    const target = keyboardFocusId || hoveredId || selectedId;
+    if (target) {
+      event.preventDefault();
+      selectNode(target);
+    }
+    return;
+  }
+  if (event.key === "Escape") {
+    selectedId = null;
+    keyboardFocusId = null;
+    hoveredId = null;
+    updateFocusNeighbors(null);
+    renderWelcome();
+    draw();
+    return;
+  }
+  const direction = ["ArrowRight", "ArrowDown"].includes(event.key) ? 1
+    : ["ArrowLeft", "ArrowUp"].includes(event.key) ? -1 : 0;
+  if (!direction) return;
+  event.preventDefault();
+  const visible = [...visibleNodeIds()].map(id => nodeById.get(id)).filter(Boolean);
+  if (!visible.length) return;
+  const activeId = keyboardFocusId || selectedId || visible[0].id;
+  let options = selectedId
+    ? [...neighborsOf(selectedId)].map(id => nodeById.get(id)).filter(Boolean)
+    : visible;
+  if (!options.length) options = visible;
+  options.sort((a, b) => a.label.localeCompare(b.label));
+  const index = options.findIndex(node => node.id === activeId);
+  const nextIndex = index < 0
+    ? (direction > 0 ? 0 : options.length - 1)
+    : (index + direction + options.length) % options.length;
+  keyboardFocusId = options[nextIndex].id;
+  hoveredId = keyboardFocusId;
+  updateFocusNeighbors(keyboardFocusId);
+  matchStatus.textContent = `Focused ${options[nextIndex].label}. Press Enter to open details.`;
+  draw();
+}
+
+function parseWikiFrontmatter(text, context) {
+  if (!text.startsWith("---\n")) throw new Error(`${context}: missing YAML frontmatter`);
+  const end = text.indexOf("\n---", 4);
+  if (end < 0) throw new Error(`${context}: unterminated YAML frontmatter`);
+  const fields = {};
+  let currentList = null;
+  let previousKey = null;
+  let malformedSourceRefsLine = null;
+  const lines = text.slice(4, end).split(/\r?\n/);
+  lines.forEach((line, index) => {
+    if (!line.trim() || line.trimStart().startsWith("#")) return;
+    const item = line.match(/^\s*-\s*(.*?)\s*$/);
+    if (item) {
+      if (currentList) {
+        fields[currentList].push(item[1].replace(/^["']|["']$/g, ""));
+      } else if (previousKey === "source_refs") {
+        malformedSourceRefsLine = index + 2;
+      }
+      return;
+    }
+    const pair = line.match(/^([A-Za-z_][\w-]*):\s*(.*?)\s*$/);
+    if (!pair) throw new Error(`${context}:${index + 2}: malformed frontmatter field`);
+    const [, key, rawValue] = pair;
+    previousKey = key;
+    currentList = null;
+    if (rawValue === "[]") {
+      fields[key] = [];
+    } else if (!rawValue) {
+      fields[key] = [];
+      currentList = key;
+    } else {
+      fields[key] = rawValue.replace(/^["']|["']$/g, "");
+    }
+  });
+  const body = text.slice(end + 4).replace(/^\n+/, "");
+  if (typeof fields.title !== "string" || !fields.title.trim()) {
+    throw new Error(`${context}: missing frontmatter title`);
+  }
+  if (!["project", "skill"].includes(fields.type)) {
+    throw new Error(`${context}: unsupported frontmatter type ${String(fields.type)}`);
+  }
+  if (fields.type === "project" && malformedSourceRefsLine !== null) {
+    throw new Error(`${context}:${malformedSourceRefsLine}: malformed source_refs list`);
+  }
+  if (fields.aliases !== undefined && (!Array.isArray(fields.aliases)
+    || fields.aliases.some(alias => typeof alias !== "string"))) {
+    throw new Error(`${context}: aliases must be a YAML list of strings`);
+  }
+  if (fields.type === "project") {
+    if (fields.source_refs !== undefined && (!Array.isArray(fields.source_refs)
+      || fields.source_refs.some(reference => typeof reference !== "string"))) {
+      throw new Error(`${context}: source_refs must be a YAML list of strings`);
+    }
+  } else {
+    fields.source_refs = [];
+  }
+  return {fields, body};
+}
+
+function resolveMarkdownHref(href, originPath, context) {
+  if (!href || href.startsWith("//") || /^[a-z][a-z0-9+.-]*:/i.test(href)) {
+    throw new Error(`${context}: external or empty Markdown link is not supported: ${href}`);
+  }
+  let target;
+  try {
+    target = new URL(href, new URL(originPath, "https://wiki.invalid/"));
+  } catch (error) {
+    throw new Error(`${context}: invalid Markdown link ${href}: ${error.message}`);
+  }
+  if (target.origin !== "https://wiki.invalid" || target.search) {
+    throw new Error(`${context}: unsupported Markdown link ${href}`);
+  }
+  const pagePath = decodeURIComponent(target.pathname.replace(/^\/+/, ""));
+  if (!pagePath || pagePath.split("/").some(part => part === "." || part === "..")) {
+    throw new Error(`${context}: Markdown link escapes the wiki: ${href}`);
+  }
+  return pagePath + target.hash;
+}
+
+function plainMarkdown(value) {
+  return value.replace(/!?\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .replace(/[*_`~]{1,3}/g, "")
+    .replace(/\s+/g, " ").trim();
+}
+
+function markdownLinks(value, originPath, context) {
+  const links = [];
+  const pattern = /\[([^\]]+)\]\(([^)]+)\)/g;
+  for (const match of value.matchAll(pattern)) {
+    links.push({
+      label: plainMarkdown(match[1]),
+      href: resolveMarkdownHref(match[2].trim(), originPath, context),
+    });
+  }
+  return links;
+}
+
+function sectionBody(body, heading, context) {
+  const headingPattern = new RegExp(`^##\\s+${heading.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*$`, "m");
+  const match = headingPattern.exec(body);
+  if (!match) throw new Error(`${context}: missing required section '## ${heading}'`);
+  const remainder = body.slice(match.index + match[0].length);
+  const nextHeading = /^##\s+/m.exec(remainder);
+  return nextHeading ? remainder.slice(0, nextHeading.index) : remainder;
+}
+
+function definitionFromPage(body, context) {
+  const title = /^#\s+.+$/m.exec(body);
+  if (!title) throw new Error(`${context}: missing top-level title heading`);
+  const afterTitle = body.slice(title.index + title[0].length);
+  const nextHeading = /^##\s+/m.exec(afterTitle);
+  const definition = nextHeading ? afterTitle.slice(0, nextHeading.index) : afterTitle;
+  return plainMarkdown(definition.split(/\r?\n/)
+    .filter(line => line.trim() && !line.trimStart().startsWith("<!--"))
+    .join(" "));
+}
+
+function splitMarkdownRow(line) {
+  let value = line.trim();
+  if (value.startsWith("|")) value = value.slice(1);
+  if (value.endsWith("|")) value = value.slice(0, -1);
+  const cells = [];
+  let cell = "";
+  let escaped = false;
+  for (const char of value) {
+    if (char === "|" && !escaped) {
+      cells.push(cell.trim());
+      cell = "";
+    } else {
+      cell += char;
+    }
+    escaped = char === "\\" && !escaped;
+    if (char !== "\\") escaped = false;
+  }
+  cells.push(cell.trim());
+  return cells;
+}
+
+function tableRows(section, allowedHeaders, context) {
+  const lines = section.split(/\r?\n/);
+  const start = lines.findIndex(line => line.includes("|"));
+  if (start < 0) return [];
+  const headers = splitMarkdownRow(lines[start]);
+  if (headers.length !== allowedHeaders.length
+    || headers.some((header, index) => !allowedHeaders[index].includes(header))) {
+    throw new Error(`${context}: unsupported table columns ${JSON.stringify(headers)}`);
+  }
+  if (start + 1 >= lines.length) throw new Error(`${context}: table has no separator row`);
+  const separator = splitMarkdownRow(lines[start + 1]);
+  if (separator.length !== headers.length
+    || separator.some(cell => !/^:?-{3,}:?$/.test(cell.replace(/\s/g, "")))) {
+    throw new Error(`${context}: malformed table separator`);
+  }
+  const rows = [];
+  lines.slice(start + 2).forEach((line, index) => {
+    if (!line.trim() || !line.includes("|")) return;
+    const cells = splitMarkdownRow(line);
+    if (cells.length !== headers.length) {
+      throw new Error(`${context}:${start + index + 3}: expected ${headers.length} table cells, got ${cells.length}`);
+    }
+    rows.push(cells);
+  });
+  return rows;
+}
+
+function makeDroppedPage(file, text) {
+  const context = file.name || "Markdown note";
+  const {fields, body} = parseWikiFrontmatter(text, context);
+  const path = `${fields.type === "project" ? "projects" : "skills"}/${context}`;
+  if (!path.toLowerCase().endsWith(".md")) {
+    throw new Error(`${context}: expected a .md filename`);
+  }
+  return {
+    path,
+    type: fields.type,
+    title: fields.title.trim(),
+    aliases: fields.aliases || [],
+    source_refs: fields.source_refs || [],
+    body,
+  };
+}
+
+const DROPPED_RELATIONSHIP_SPECS = {
+  requirement: {
+    heading: "Know-how needed",
+    headers: [
+      ["Skill", "Skill requirement", "Skill candidate"],
+      ["Review status", "Status"],
+      ["Rationale"],
+    ],
+    validStatuses: new Set(["suggested", "user-confirmed"]),
+  },
+  source_evidence: {
+    heading: "Skills shown by sources",
+    headers: [
+      ["Skill", "Skill or capability", "Capability", "Claim"],
+      ["Evidence status", "Status"],
+      ["Evidence"],
+    ],
+    validStatuses: new Set(["documented", "inferred", "unknown"]),
+  },
+};
+
+function parseDroppedProject(page, skillPaths, inventoryByPage) {
+  sectionBody(page.body, "User-reported contributions and outcomes", page.path);
+  const project = {
+    title: page.title,
+    path: page.path,
+    source_reviews: [],
+    unmapped_claims: [],
+    data_quality_notes: [],
+  };
+  const seenSources = new Set();
+  for (const sourceRef of page.source_refs) {
+    const href = resolveMarkdownHref(sourceRef, page.path, `${page.path}:source_refs`);
+    const sourcePath = href.split("#", 1)[0];
+    const inventory = inventoryByPage.get(sourcePath);
+    if (!inventory) throw new Error(`${page.path}: source page is missing from embedded inventory: ${sourcePath}`);
+    if (!seenSources.has(sourcePath)) {
+      project.source_reviews.push({...inventory});
+      seenSources.add(sourcePath);
+    }
+  }
+
+  const relationships = [];
+  for (const [kind, spec] of Object.entries(DROPPED_RELATIONSHIP_SPECS)) {
+    const section = sectionBody(page.body, spec.heading, page.path);
+    const rows = tableRows(section, spec.headers, `${page.path}:${spec.heading}`);
+    rows.forEach((cells, rowIndex) => {
+      const context = `${page.path}:${spec.heading} row ${rowIndex + 1}`;
+      const firstCellLinks = markdownLinks(cells[0], page.path, context);
+      for (const link of firstCellLinks) {
+        const linkedPath = link.href.split("#", 1)[0];
+        if (linkedPath.startsWith("skills/") && !skillPaths.has(linkedPath)) {
+          throw new Error(`${context}: linked skill note is missing from the batch: ${linkedPath}`);
+        }
+      }
+      const skillLink = firstCellLinks.find(link => {
+        const skillPath = link.href.split("#", 1)[0];
+        return skillPath.startsWith("skills/") && skillPaths.has(skillPath);
+      });
+      const claim = plainMarkdown(cells[0]);
+      if (!claim) throw new Error(`${context}: empty skill/capability cell`);
+      const status = plainMarkdown(cells[1]);
+      const details = plainMarkdown(cells[2]);
+      const evidence = markdownLinks(cells[2], page.path, context);
+
+      if (!spec.validStatuses.has(status)) {
+        if (kind === "source_evidence" && status === "user-reported") {
+          project.data_quality_notes.push({
+            section: spec.heading,
+            claim,
+            status,
+            details,
+            evidence,
+          });
+          return;
+        }
+        throw new Error(`${context}: invalid status ${JSON.stringify(status)}`);
+      }
+      if (!skillLink) {
+        const uniqueEvidence = [...evidence];
+        for (const link of firstCellLinks) {
+          if (!uniqueEvidence.some(item => item.href === link.href && item.label === link.label)) {
+            uniqueEvidence.push(link);
+          }
+        }
+        project.unmapped_claims.push({kind, claim, status, details, evidence: uniqueEvidence});
+        return;
+      }
+      const skillPath = skillLink.href.split("#", 1)[0];
+      relationships.push({
+        project_path: page.path,
+        skill_path: skillPath,
+        kind,
+        status,
+        rationale: details,
+        evidence,
+      });
+    });
+  }
+  return {project, relationships};
+}
+
+function parseDroppedSkillUserReports(page, projectPaths) {
+  const section = sectionBody(page.body, "Projects with user-reported use", page.path);
+  const relationships = [];
+  section.split(/\r?\n/).forEach((line, index) => {
+    const item = line.trim();
+    if (!item.startsWith("- ")) return;
+    if (/^-\s+(?:None|No)\b/i.test(item)) return;
+    const links = markdownLinks(item.slice(2), page.path, `${page.path}:user-reported row ${index + 1}`);
+    if (!links.length) throw new Error(`${page.path}:user-reported row ${index + 1}: expected a project link`);
+    const projectPath = links[0].href.split("#", 1)[0];
+    if (!projectPaths.has(projectPath)) {
+      throw new Error(`${page.path}: user-reported list links to missing project ${projectPath}`);
+    }
+    relationships.push({
+      project_path: projectPath,
+      skill_path: page.path,
+      kind: "user_reported",
+      status: "user-reported",
+      rationale: "User-reported capability.",
+      evidence: [],
+    });
+  });
+  return relationships;
+}
+
+function graphDataFromDroppedPages(pages) {
+  const projects = pages.filter(page => page.type === "project").sort((a, b) => a.path.localeCompare(b.path));
+  const skills = pages.filter(page => page.type === "skill").sort((a, b) => a.path.localeCompare(b.path));
+  if (!projects.length || !skills.length) {
+    throw new Error("A valid batch must include project notes and skill notes.");
+  }
+  const projectByPath = new Map(projects.map(page => [page.path, page]));
+  const skillByPath = new Map(skills.map(page => [page.path, page]));
+  const inventoryByPage = new Map(BASE_SOURCE_INVENTORY.map(row => [row.page_path, row]));
+  const relationships = [];
+  const projectNodes = [];
+  for (const page of projects) {
+    const parsed = parseDroppedProject(page, new Set(skillByPath.keys()), inventoryByPage);
+    relationships.push(...parsed.relationships);
+    projectNodes.push({
+      id: parsed.project.path,
+      type: "project",
+      label: parsed.project.title,
+      title: parsed.project.title,
+      path: parsed.project.path,
+      href: parsed.project.path,
+      search_terms: [parsed.project.title],
+      source_reviews: parsed.project.source_reviews,
+      unmapped_claims: parsed.project.unmapped_claims,
+      data_quality_notes: parsed.project.data_quality_notes,
+    });
+  }
+  for (const page of skills) {
+    for (const requiredHeading of ["Projects needing this skill", "Projects showing this skill"]) {
+      sectionBody(page.body, requiredHeading, page.path);
+    }
+    relationships.push(...parseDroppedSkillUserReports(page, new Set(projectByPath.keys())));
+  }
+
+  const skillNodesById = new Map();
+  const graphIdByPath = new Map();
+  for (const page of skills) {
+    const approvedGroup = BASE_SKILL_ALIAS_BY_PATH.get(page.path);
+    const id = approvedGroup?.id || page.path;
+    const label = approvedGroup?.label || page.title;
+    let node = skillNodesById.get(id);
+    if (!node) {
+      node = {id, type: "skill", label, title: label, pages: [], search_terms: []};
+      skillNodesById.set(id, node);
+    }
+    node.pages.push({
+      path: page.path,
+      title: page.title,
+      definition: definitionFromPage(page.body, page.path),
+      aliases: page.aliases,
+      href: page.path,
+    });
+    node.search_terms.push(page.title, ...page.aliases, label);
+    graphIdByPath.set(page.path, id);
+  }
+  for (const page of skills) {
+    const group = BASE_SKILL_ALIAS_BY_PATH.get(page.path);
+    if (!group?.id.startsWith("alias:")) continue;
+    const missing = group.id.slice("alias:".length).split("|").filter(path => !skillByPath.has(path));
+    if (missing.length) throw new Error(`${page.path}: alias group is incomplete; missing ${missing.join(", ")}`);
+  }
+
+  const allNodes = [...projectNodes, ...skillNodesById.values()];
+  const nodeIds = new Set(allNodes.map(node => node.id));
+  const edgeCounts = new Map();
+  const edges = relationships.map((relationship, index) => {
+    const source = relationship.project_path;
+    const target = graphIdByPath.get(relationship.skill_path);
+    if (!target || !nodeIds.has(source) || !nodeIds.has(target)) {
+      throw new Error(`Unresolved graph relationship ${source} -> ${relationship.skill_path}`);
+    }
+    edgeCounts.set(relationship.kind, (edgeCounts.get(relationship.kind) || 0) + 1);
+    return {
+      id: `edge-${String(index).padStart(5, "0")}`,
+      source,
+      target,
+      kind: relationship.kind,
+      status: relationship.status,
+      rationale: relationship.rationale,
+      evidence: relationship.evidence,
+    };
+  });
+  edges.sort((a, b) => [a.source, a.target, a.kind, a.status, a.rationale].join("\u0000")
+    .localeCompare([b.source, b.target, b.kind, b.status, b.rationale].join("\u0000")));
+  edges.forEach((edge, index) => { edge.id = `edge-${String(index).padStart(5, "0")}`; });
+  allNodes.sort((a, b) => [a.type, a.id].join("\u0000").localeCompare([b.type, b.id].join("\u0000")));
+  return {
+    nodes: allNodes,
+    edges,
+    source_inventory: BASE_SOURCE_INVENTORY,
+    counts: {
+      projects: projectNodes.length,
+      skill_nodes: skillNodesById.size,
+      canonical_skills: skills.length,
+      relationships: Object.fromEntries([...edgeCounts.entries()].sort(([a], [b]) => a.localeCompare(b))),
+    },
+  };
+}
+
+async function parseDroppedMarkdown(files) {
+  if (!files.length) throw new Error("No Markdown notes were provided.");
+  const pages = await Promise.all(files.map(async file => {
+    if (!file.name.toLowerCase().endsWith(".md")) {
+      throw new Error(`${file.name}: only .md files are supported.`);
+    }
+    return makeDroppedPage(file, await file.text());
+  }));
+  const paths = pages.map(page => page.path);
+  if (new Set(paths).size !== paths.length) throw new Error("The batch contains duplicate project or skill filenames.");
+  return graphDataFromDroppedPages(pages);
+}
+
+function installGraphData(nextData) {
+  DATA = nextData;
+  nodes = DATA.nodes.map((node, index) => ({...node, x: 0, y: 0, vx: 0, vy: 0, index}));
+  nodeById = new Map(nodes.map(node => [node.id, node]));
+  edges = DATA.edges.map(edge => ({...edge, sourceNode: nodeById.get(edge.source), targetNode: nodeById.get(edge.target)}));
+  selectedId = null;
+  hoveredId = null;
+  keyboardFocusId = null;
+  searchMatches = new Set();
+  searchNeighbors = new Set();
+  focusNeighbors = new Set();
+  panX = 0;
+  panY = 0;
+  zoom = 1;
+  alpha = 1;
+  sizeCanvas();
+  updateStats();
+  updateSearch();
+  renderWelcome();
+  draw();
+}
+
+const dropZone = document.getElementById("drop-zone");
+const markdownInput = document.getElementById("md-files");
+const loadStatus = document.getElementById("load-status");
+
+async function loadMarkdownFiles(files) {
+  if (!files.length) {
+    loadStatus.classList.add("error");
+    loadStatus.textContent = "No Markdown files were received; the current graph is unchanged.";
+    return;
+  }
+  loadStatus.classList.remove("error");
+  loadStatus.textContent = `Parsing ${files.length} Markdown ${files.length === 1 ? "note" : "notes"}...`;
+  try {
+    const nextData = await parseDroppedMarkdown(files);
+    installGraphData(nextData);
+    loadStatus.textContent = `Loaded ${nextData.counts.projects} projects and ${nextData.counts.canonical_skills} skills.`;
+  } catch (error) {
+    loadStatus.classList.add("error");
+    loadStatus.textContent = `Could not load Markdown: ${error.message}`;
+  }
+}
+
+markdownInput.addEventListener("change", () => {
+  loadMarkdownFiles([...markdownInput.files]);
+  markdownInput.value = "";
+});
+dropZone.addEventListener("dragover", event => {
+  event.preventDefault();
+  dropZone.classList.add("dragging");
+});
+dropZone.addEventListener("dragleave", event => {
+  if (!dropZone.contains(event.relatedTarget)) dropZone.classList.remove("dragging");
+});
+dropZone.addEventListener("drop", event => {
+  event.preventDefault();
+  dropZone.classList.remove("dragging");
+  loadMarkdownFiles([...event.dataTransfer.files]);
+});
+
+function resize() {
+  sizeCanvas();
+  draw();
+}
+
+searchInput.addEventListener("input", updateSearch);
+for (const input of Object.values(filters)) {
+  input.addEventListener("change", refreshFocus);
+}
+canvas.addEventListener("pointerdown", handlePointerDown);
+canvas.addEventListener("pointermove", handlePointerMove);
+canvas.addEventListener("pointerup", handlePointerUp);
+canvas.addEventListener("pointercancel", handlePointerUp);
+canvas.addEventListener("pointerleave", () => {
+  if (gesture) return;
+  hoveredId = null;
+  updateFocusNeighbors(selectedId);
+  canvas.style.cursor = "";
+  draw();
+});
+canvas.addEventListener("wheel", handleWheel, {passive: false});
+canvas.addEventListener("keydown", handleGraphKey);
+window.addEventListener("resize", resize);
+if ("ResizeObserver" in window) new ResizeObserver(resize).observe(canvas);
+sizeCanvas();
+updateStats();
+updateSearch();
+frame();
+</script>
+</body>
+</html>

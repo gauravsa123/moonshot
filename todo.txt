@@ -1,0 +1,10 @@
+Image outlier model for DDI, for Road surface images
+    - To select images with good road visibility
+
+Agentic RAG - add skill of Mentoring and guiding interns for implentation 
+Browser Use - add skill of Mentoring and guiding interns for workflow design and implentation 
+DDI - VRU add team collaboration skill
+
+General
+    - Learning skill to adapt to the domain of project
+    - Incredible problem solving skill

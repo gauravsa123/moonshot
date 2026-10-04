@@ -1,0 +1,38 @@
+<h2>Choose the wiki's foundation</h2>
+<p class="subtitle">All three keep <code>raw/</code> immutable and support project-by-project ingestion. The difference is what becomes the canonical knowledge layer.</p>
+
+<div class="options">
+  <div class="option" data-choice="markdown" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Markdown-first</h3>
+      <div class="mockup">
+        <div class="mockup-header">Knowledge flow</div>
+        <div class="mockup-body">raw files &rarr; linked Markdown pages &rarr; Obsidian graph view</div>
+      </div>
+      <p>Most direct match to the gist; easiest to read and maintain. Structured skill analysis and reliable future charts may need extra conventions later.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="graph" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Graph-first</h3>
+      <div class="mockup">
+        <div class="mockup-header">Knowledge flow</div>
+        <div class="mockup-body">raw files &rarr; typed entities + relationships &rarr; generated pages and visual map</div>
+      </div>
+      <p>Relationships and skill maps are explicit from day one. Requires more schema/tooling, and the graph is less pleasant as the primary reading and editing surface.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="hybrid" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Markdown canonical, graph as a view <span class="label">Recommended</span></h3>
+      <div class="mockup">
+        <div class="mockup-header">Knowledge flow</div>
+        <div class="mockup-body">raw files &rarr; cited Markdown + consistent metadata &rarr; graph, map, portfolio when needed</div>
+      </div>
+      <p>Readable, agent-maintainable wiki stays authoritative; small structured fields make future skills maps and portfolio views reproducible without building those outputs now.</p>
+    </div>
+  </div>
+</div>
