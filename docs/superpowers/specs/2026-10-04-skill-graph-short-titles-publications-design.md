@@ -37,6 +37,12 @@ existing project nodes without overstating source evidence or authorship.
   coloring takes priority over the default purple skill color, while project
   nodes remain blue and Publications remains pink. Keep requirement edges
   amber and dashed.
+- Remove the Source evidence checkbox. Keep source-evidence edges only when
+  both endpoint nodes are already visible through the remaining User-reported
+  or Project requirements toggles. Evidence edges must not introduce nodes
+  that those toggles would otherwise hide. Search and selection may still show
+  an individual node without making its evidence edges visible. Source
+  evidence remains in graph data and node details; do not alter its provenance.
 
 ## Data flow and scope
 
@@ -73,3 +79,5 @@ source inventory, and source review states remain unchanged. No files under
   and generated-HTML determinism continue to validate.
 - Requirement-linked skill nodes remain amber regardless of filter state, with
   a legend marker distinct from the amber dashed requirement-edge marker.
+- Source-evidence edges appear only between nodes surfaced by the remaining
+  toggles; source-only nodes can still be reached through search or selection.

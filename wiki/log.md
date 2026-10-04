@@ -666,3 +666,13 @@ Preserve prior entries when appending. Keep source statuses consistent with
 - **Index/inventory:** the existing graph link remains in the index; source inventory is unchanged.
 - **Review:** the user approved this color behavior. Tests and code reviews were not run at the user's request.
 - **Findings/questions:** none.
+
+## 2026-10-04 — Source evidence visibility
+
+- **Activity:** removed the Source evidence checkbox from the graph controls.
+- **Scope:** source-evidence relationships in the 29-project graph.
+- **Pages updated:** regenerated the [AI Skills & Projects graph](skill-graph.html) from `scripts/skill_graph_template.html`.
+- **Presentation:** source-evidence edges appear only when both endpoint nodes are already visible through the User-reported or Project requirements toggles. Evidence edges do not introduce additional nodes. The two source-only skills, Agent-based retrieval-tool routing design and Comparative evaluation of RAG responses, remain available through search or selection without displaying their evidence edges by themselves.
+- **Index/inventory:** graph index link and source inventory remain unchanged; source-evidence records and detail data are preserved.
+- **Review:** user approved this visibility behavior. Tests and code reviews were not run at the user's request.
+- **Findings/questions:** none.
