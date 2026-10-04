@@ -31,6 +31,12 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6
 
+      - name: Require main branch for publishing
+        if: github.ref != 'refs/heads/main'
+        run: |
+          echo "::error::Pages can only be deployed from main. Select main for manual dispatch."
+          exit 1
+
       - name: Build graph
         run: python3 scripts/build_skill_graph.py
 
