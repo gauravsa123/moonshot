@@ -232,6 +232,13 @@ input[type="search"] {
   transform: rotate(45deg);
 }
 .swatch.requirement { border-color: var(--requirement); border-top-style: dashed; }
+.swatch.requirement-node {
+  width: 9px;
+  height: 9px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--requirement);
+}
 .swatch.documented { border-color: var(--documented); }
 .warning { color: var(--requirement); font-weight: 650; }
 .empty { color: var(--muted); font-style: italic; }
@@ -289,6 +296,7 @@ input[type="search"] {
         <span class="legend-item"><i class="swatch publication_authorship"></i> User-reported authorship</span>
         <span class="legend-item"><i class="swatch publication-node"></i> Publications hub</span>
         <span class="legend-item"><i class="swatch requirement"></i> Requirement</span>
+        <span class="legend-item"><i class="swatch requirement-node"></i> Project-required skill</span>
       </div>
     </section>
     <aside class="panel detail" id="detail" aria-live="polite" aria-label="Selection details"></aside>
@@ -316,6 +324,9 @@ const filters = Object.fromEntries(
 let nodes = DATA.nodes.map((node, index) => ({...node, x: 0, y: 0, vx: 0, vy: 0, index}));
 let nodeById = new Map(nodes.map(node => [node.id, node]));
 let edges = DATA.edges.map(edge => ({...edge, sourceNode: nodeById.get(edge.source), targetNode: nodeById.get(edge.target)}));
+let requirementSkillIds = new Set(
+  edges.filter(edge => edge.kind === "requirement").map(edge => edge.target)
+);
 const BASE_SOURCE_INVENTORY = DATA.source_inventory.map(row => ({...row}));
 const BASE_SKILL_ALIAS_BY_PATH = new Map();
 for (const node of DATA.nodes.filter(item => item.type === "skill")) {
@@ -482,9 +493,12 @@ function forceTick() {
 
 function drawNode(node, focused, matches, counts, style) {
   const radius = nodeRadius(node, counts);
-  const color = style.getPropertyValue(
-    node.type === "project" ? "--project" : node.type === "publication" ? "--publication" : "--skill"
-  ).trim();
+  const colorName = node.type === "project"
+    ? "--project"
+    : node.type === "publication"
+      ? "--publication"
+      : requirementSkillIds.has(node.id) ? "--requirement" : "--skill";
+  const color = style.getPropertyValue(colorName).trim();
   const dim = (focused && node.id !== focused && !focusNeighbors.has(node.id)
     && !searchNeighbors.has(node.id))
     || (searchMatches.size && !matches && !searchNeighbors.has(node.id)
@@ -1480,6 +1494,9 @@ function installGraphData(nextData) {
   nodes = DATA.nodes.map((node, index) => ({...node, x: 0, y: 0, vx: 0, vy: 0, index}));
   nodeById = new Map(nodes.map(node => [node.id, node]));
   edges = DATA.edges.map(edge => ({...edge, sourceNode: nodeById.get(edge.source), targetNode: nodeById.get(edge.target)}));
+  requirementSkillIds = new Set(
+    edges.filter(edge => edge.kind === "requirement").map(edge => edge.target)
+  );
   selectedId = null;
   hoveredId = null;
   keyboardFocusId = null;

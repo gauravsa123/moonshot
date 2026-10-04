@@ -31,6 +31,12 @@ existing project nodes without overstating source evidence or authorship.
   Keep its association edges separate from project-skill provenance filters;
   selecting it should show the associated project links and available
   publication-source links.
+- Color a skill node amber when any project-requirement edge targets it, even
+  while the requirement-edge filter is off. This is a graph-wide rule for
+  shared skills; it avoids conflicting per-project node colors. Requirement
+  coloring takes priority over the default purple skill color, while project
+  nodes remain blue and Publications remains pink. Keep requirement edges
+  amber and dashed.
 
 ## Data flow and scope
 
@@ -65,3 +71,5 @@ source inventory, and source review states remain unchanged. No files under
   unchanged.
 - Existing project-skill edges, provenance filters, source inventory, links,
   and generated-HTML determinism continue to validate.
+- Requirement-linked skill nodes remain amber regardless of filter state, with
+  a legend marker distinct from the amber dashed requirement-edge marker.

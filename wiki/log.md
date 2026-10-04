@@ -656,3 +656,13 @@ Preserve prior entries when appending. Keep source statuses consistent with
 - **Provenance:** short titles affect display labels only; full titles remain searchable and available in details. The Publications hub has five `user-reported` authorship links with no source-evidence claims. Existing evidence statuses, Browser Use's three `needs review` source records, publication-status qualifications, source inventory, and wiki index remain unchanged. Nothing under `raw/` was modified.
 - **Validation:** focused Python tests passed (12 tests); dropped-Markdown preview checks confirmed short/full titles, publication links/details, and preservation of the current graph after invalid authorship metadata. Two consecutive builds produced identical HTML (SHA-256 `efb26b9e7164409f7959a44369573c95f304586ccfc4e659c0e9f357a617426c`). The graph contains 29 projects, 227 skill nodes, one Publications hub, five authorship links, and the original 389 relationships.
 - **Review state:** the user approved the graph design and personally authored-work associations. These remain user-reported and do not establish source-documented authorship, acceptance, venue, or publication status.
+
+## 2026-10-04 — Requirement-linked skill node colors
+
+- **Activity:** added an amber fill to skill nodes used by project requirements.
+- **Scope:** the 307 project-requirement edges in the 29-project skill graph.
+- **Pages updated:** regenerated the [AI Skills & Projects graph](skill-graph.html) from `scripts/skill_graph_template.html`.
+- **Presentation:** any skill targeted by at least one requirement edge is amber regardless of filter state; other skills stay purple, project nodes blue, Publications pink, and requirement edges remain amber and dashed. The legend distinguishes required-skill nodes from requirement edges.
+- **Index/inventory:** the existing graph link remains in the index; source inventory is unchanged.
+- **Review:** the user approved this color behavior. Tests and code reviews were not run at the user's request.
+- **Findings/questions:** none.
