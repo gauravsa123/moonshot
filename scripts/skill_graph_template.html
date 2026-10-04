@@ -16,6 +16,7 @@
   --line: #d7e0eb;
   --project: #167d9a;
   --skill: #7047c7;
+  --publication: #bd4b73;
   --documented: #7047c7;
   --inferred: #966fe5;
   --unknown: #727f90;
@@ -34,6 +35,7 @@
     --line: #34445b;
     --project: #49bed1;
     --skill: #b495ff;
+    --publication: #ff8bb0;
     --documented: #b495ff;
     --inferred: #9c7ce7;
     --unknown: #9aa8ba;
@@ -221,6 +223,14 @@ input[type="search"] {
 .swatch.inferred { border-top-style: dashed; }
 .swatch.unknown { border-top-style: dotted; }
 .swatch.user_reported { border-color: var(--user); }
+.swatch.publication_authorship { border-color: var(--user); border-top-style: dashed; }
+.swatch.publication-node {
+  width: 9px;
+  height: 9px;
+  border: 0;
+  background: var(--publication);
+  transform: rotate(45deg);
+}
 .swatch.requirement { border-color: var(--requirement); border-top-style: dashed; }
 .swatch.documented { border-color: var(--documented); }
 .warning { color: var(--requirement); font-weight: 650; }
@@ -253,8 +263,8 @@ input[type="search"] {
   </header>
   <section class="toolbar" aria-label="Graph controls">
     <div class="search-wrap">
-      <label for="search">Search skills and projects</label>
-      <input id="search" type="search" placeholder="Search a skill, project, or alias">
+      <label for="search">Search skills, projects, and publications</label>
+      <input id="search" type="search" placeholder="Search a skill, project, publication, or alias">
     </div>
     <fieldset class="filters">
       <legend>Show relationship types</legend>
@@ -272,17 +282,19 @@ input[type="search"] {
     <span class="load-status" id="load-status" role="status"></span>
   </section>
   <div class="workspace">
-    <section class="panel graph-panel" aria-label="Skill and project network">
+    <section class="panel graph-panel" aria-label="Skills, projects, and publications network">
       <div class="graph-heading">
         <h2>Network</h2>
         <span id="canvas-instructions">Focus the graph, then use arrow keys to move between connected nodes.</span>
       </div>
-      <canvas id="graph" tabindex="0" role="img" aria-label="Interactive graph of AI skills and projects" aria-describedby="canvas-instructions"></canvas>
+      <canvas id="graph" tabindex="0" role="img" aria-label="Interactive graph of AI skills, projects, and publications" aria-describedby="canvas-instructions"></canvas>
       <div class="legend" aria-label="Relationship legend">
         <span class="legend-item"><i class="swatch documented"></i> Documented</span>
         <span class="legend-item"><i class="swatch inferred"></i> Inferred</span>
         <span class="legend-item"><i class="swatch unknown"></i> Unknown</span>
         <span class="legend-item"><i class="swatch user_reported"></i> User-reported</span>
+        <span class="legend-item"><i class="swatch publication_authorship"></i> User-reported authorship</span>
+        <span class="legend-item"><i class="swatch publication-node"></i> Publications hub</span>
         <span class="legend-item"><i class="swatch requirement"></i> Requirement</span>
       </div>
     </section>
@@ -359,7 +371,10 @@ function sizeCanvas() {
 }
 
 function visibleEdges() {
-  return edges.filter(edge => filters[edge.kind]?.checked);
+  return edges.filter(edge => {
+    const filterName = edge.kind === "publication_authorship" ? "user_reported" : edge.kind;
+    return filters[filterName]?.checked;
+  });
 }
 
 function visibleNodeIds() {
@@ -403,11 +418,15 @@ function linkedProjectCounts() {
 
 function nodeRadius(node, counts) {
   if (node.type === "project") return 7;
+  if (node.type === "publication") return 9;
   const count = counts.get(node.id)?.size || 0;
   return 4 + Math.min(5, Math.sqrt(count) * 1.5);
 }
 
 function edgeStyle(edge, style) {
+  if (edge.kind === "publication_authorship") {
+    return {color: style.getPropertyValue("--user").trim(), dash: [5, 4]};
+  }
   if (edge.kind === "user_reported") return {color: style.getPropertyValue("--user").trim(), dash: []};
   if (edge.kind === "requirement") return {color: style.getPropertyValue("--requirement").trim(), dash: [5, 4]};
   if (edge.status === "documented") return {color: style.getPropertyValue("--documented").trim(), dash: []};
@@ -463,9 +482,9 @@ function forceTick() {
 
 function drawNode(node, focused, matches, counts, style) {
   const radius = nodeRadius(node, counts);
-  const color = node.type === "project"
-    ? style.getPropertyValue("--project").trim()
-    : style.getPropertyValue("--skill").trim();
+  const color = style.getPropertyValue(
+    node.type === "project" ? "--project" : node.type === "publication" ? "--publication" : "--skill"
+  ).trim();
   const dim = (focused && node.id !== focused && !focusNeighbors.has(node.id)
     && !searchNeighbors.has(node.id))
     || (searchMatches.size && !matches && !searchNeighbors.has(node.id)
@@ -480,13 +499,22 @@ function drawNode(node, focused, matches, counts, style) {
     ctx.arc(node.x, node.y, radius + 2, 0, Math.PI * 2);
     ctx.stroke();
     ctx.fillRect(node.x - radius * .65, node.y - radius * .65, radius * 1.3, radius * 1.3);
+  } else if (node.type === "publication") {
+    ctx.beginPath();
+    ctx.moveTo(node.x, node.y - radius);
+    ctx.lineTo(node.x + radius, node.y);
+    ctx.lineTo(node.x, node.y + radius);
+    ctx.lineTo(node.x - radius, node.y);
+    ctx.closePath();
+    ctx.fill();
   } else {
     ctx.beginPath();
     ctx.arc(node.x, node.y, radius, 0, Math.PI * 2);
     ctx.fill();
   }
   const zoomed = zoom >= 1.7;
-  if (node.type === "project" || node.id === hoveredId || node.id === selectedId || matches || zoomed) {
+  if (node.type === "project" || node.type === "publication"
+    || node.id === hoveredId || node.id === selectedId || matches || zoomed) {
     const text = node.label.length > 30 ? `${node.label.slice(0, 28)}...` : node.label;
     ctx.font = `${node.id === selectedId ? 650 : 500} 11px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
     ctx.textAlign = "left";
@@ -647,6 +675,7 @@ function renderWelcome() {
 const KIND_LABELS = {
   source_evidence: "Source evidence",
   user_reported: "User-reported use",
+  publication_authorship: "User-reported authorship",
   requirement: "Project requirement",
 };
 
@@ -697,13 +726,30 @@ function renderDetail(node) {
   detail.replaceChildren();
   const heading = element("h2", "", node.label);
   const header = element("div", "detail-head");
-  header.append(heading, element("span", "badge", node.type === "project" ? "Project" : "Skill"));
+  const typeLabel = node.type === "project"
+    ? "Project"
+    : node.type === "publication" ? "Publications" : "Skill";
+  header.append(heading, element("span", "badge", typeLabel));
   detail.append(header);
 
   if (node.type === "project") {
+    if (node.title && node.title !== node.label) {
+      detail.append(element("p", "small muted", `Full title: ${node.title}`));
+    }
     const page = element("p", "small");
     appendWikiLink(page, "Open project page", node.href);
     detail.append(page);
+  } else if (node.type === "publication") {
+    appendSection(detail, "Associated projects", section => {
+      section.append(element(
+        "p",
+        "small muted",
+        "These publication-authorship associations are user-reported, not source-documented."
+      ));
+      edges
+        .filter(edge => edge.source === node.id && edge.kind === "publication_authorship")
+        .forEach(edge => appendRelationshipCard(section, edge, node));
+    });
   } else {
     for (const pageData of node.pages) {
       appendSection(detail, pageData.title, section => {
@@ -719,7 +765,10 @@ function renderDetail(node) {
   }
 
   const related = edges.filter(edge => edge.source === node.id || edge.target === node.id);
-  for (const kind of ["user_reported", "source_evidence", "requirement"]) {
+  const relationshipKinds = node.type === "publication"
+    ? []
+    : ["publication_authorship", "user_reported", "source_evidence", "requirement"];
+  for (const kind of relationshipKinds) {
     const relationships = related.filter(edge => edge.kind === kind);
     appendSection(detail, `${KIND_LABELS[kind]} (${relationships.length})`, section => {
       if (!relationships.length) {
@@ -1121,6 +1170,14 @@ function tableRows(section, allowedHeaders, context) {
 function makeDroppedPage(file, text) {
   const context = file.name || "Markdown note";
   const {fields, body} = parseWikiFrontmatter(text, context);
+  if (fields.short_title !== undefined
+    && (typeof fields.short_title !== "string" || !fields.short_title.trim())) {
+    throw new Error(`${context}: short_title must be a non-empty string`);
+  }
+  if (fields.publication_authorship !== undefined
+    && (fields.type !== "project" || fields.publication_authorship !== "user-reported")) {
+    throw new Error(`${context}: publication_authorship must be 'user-reported' on a project page`);
+  }
   const path = `${fields.type === "project" ? "projects" : "skills"}/${context}`;
   if (!path.toLowerCase().endsWith(".md")) {
     throw new Error(`${context}: expected a .md filename`);
@@ -1129,6 +1186,8 @@ function makeDroppedPage(file, text) {
     path,
     type: fields.type,
     title: fields.title.trim(),
+    short_title: fields.short_title?.trim(),
+    publication_authorship: fields.publication_authorship,
     aliases: fields.aliases || [],
     source_refs: fields.source_refs || [],
     body,
@@ -1160,6 +1219,8 @@ function parseDroppedProject(page, skillPaths, inventoryByPage) {
   sectionBody(page.body, "User-reported contributions and outcomes", page.path);
   const project = {
     title: page.title,
+    short_title: page.short_title,
+    publication_authorship: page.publication_authorship,
     path: page.path,
     source_reviews: [],
     unmapped_claims: [],
@@ -1279,11 +1340,11 @@ function graphDataFromDroppedPages(pages) {
     projectNodes.push({
       id: parsed.project.path,
       type: "project",
-      label: parsed.project.title,
+      label: parsed.project.short_title || parsed.project.title,
       title: parsed.project.title,
       path: parsed.project.path,
       href: parsed.project.path,
-      search_terms: [parsed.project.title],
+      search_terms: [parsed.project.short_title, parsed.project.title].filter(Boolean),
       source_reviews: parsed.project.source_reviews,
       unmapped_claims: parsed.project.unmapped_claims,
       data_quality_notes: parsed.project.data_quality_notes,
@@ -1301,10 +1362,17 @@ function graphDataFromDroppedPages(pages) {
   for (const page of skills) {
     const approvedGroup = BASE_SKILL_ALIAS_BY_PATH.get(page.path);
     const id = approvedGroup?.id || page.path;
-    const label = approvedGroup?.label || page.title;
+    const label = approvedGroup?.label || page.short_title || page.title;
     let node = skillNodesById.get(id);
     if (!node) {
-      node = {id, type: "skill", label, title: label, pages: [], search_terms: []};
+      node = {
+        id,
+        type: "skill",
+        label,
+        title: approvedGroup?.label || page.title,
+        pages: [],
+        search_terms: [],
+      };
       skillNodesById.set(id, node);
     }
     node.pages.push({
@@ -1314,7 +1382,7 @@ function graphDataFromDroppedPages(pages) {
       aliases: page.aliases,
       href: page.path,
     });
-    node.search_terms.push(page.title, ...page.aliases, label);
+    node.search_terms.push(page.short_title, page.title, ...page.aliases, label);
     graphIdByPath.set(page.path, id);
   }
   for (const page of skills) {
@@ -1324,7 +1392,23 @@ function graphDataFromDroppedPages(pages) {
     if (missing.length) throw new Error(`${page.path}: alias group is incomplete; missing ${missing.join(", ")}`);
   }
 
-  const allNodes = [...projectNodes, ...skillNodesById.values()];
+  const authoredProjects = projects.filter(
+    page => page.publication_authorship === "user-reported"
+  );
+  const publicationNode = authoredProjects.length
+    ? {
+      id: "publication-hub",
+      type: "publication",
+      label: "Publications",
+      title: "Publications",
+      search_terms: ["publications", "publication", "authorship"],
+    }
+    : null;
+  const allNodes = [
+    ...projectNodes,
+    ...skillNodesById.values(),
+    ...(publicationNode ? [publicationNode] : []),
+  ];
   const nodeIds = new Set(allNodes.map(node => node.id));
   const edgeCounts = new Map();
   const edges = relationships.map((relationship, index) => {
@@ -1344,6 +1428,23 @@ function graphDataFromDroppedPages(pages) {
       evidence: relationship.evidence,
     };
   });
+  const publicationRationale = (
+    "The user reports personally authoring publication material associated with this project."
+  );
+  for (const project of authoredProjects) {
+    edgeCounts.set(
+      "publication_authorship",
+      (edgeCounts.get("publication_authorship") || 0) + 1
+    );
+    edges.push({
+      source: publicationNode.id,
+      target: project.path,
+      kind: "publication_authorship",
+      status: "user-reported",
+      rationale: publicationRationale,
+      evidence: [],
+    });
+  }
   edges.sort((a, b) => [a.source, a.target, a.kind, a.status, a.rationale].join("\u0000")
     .localeCompare([b.source, b.target, b.kind, b.status, b.rationale].join("\u0000")));
   edges.forEach((edge, index) => { edge.id = `edge-${String(index).padStart(5, "0")}`; });

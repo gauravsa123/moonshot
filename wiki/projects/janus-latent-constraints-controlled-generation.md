@@ -2,6 +2,7 @@
 id: janus-latent-constraints-controlled-generation
 type: project
 title: Janus Latent Constraints: Controlled Generation for Images and Tabular Data
+short_title: Janus Latent Constraints
 aliases:
   - Janus Latent Constraints
 related:

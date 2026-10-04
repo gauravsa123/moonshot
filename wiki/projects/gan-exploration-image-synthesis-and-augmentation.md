@@ -2,6 +2,7 @@
 id: gan-exploration-image-synthesis-and-augmentation
 type: project
 title: GAN Exploration, Image Synthesis, and Data Augmentation
+short_title: GAN Exploration
 aliases:
   - GAN Study and Implementation
   - GAN Moonshot

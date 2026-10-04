@@ -2,6 +2,7 @@
 id: gan-hormiga-road-image-generation-and-enhancement
 type: project
 title: GAN Hormiga: Road-Image Generation and Enhancement
+short_title: GAN Hormiga
 aliases:
   - GAN Hormiga
 related:

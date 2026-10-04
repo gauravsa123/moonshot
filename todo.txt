@@ -9,4 +9,3 @@ DYP - Team collaboration, Leading the team, Stakeholder management, Leadership c
 General
     - Learning skill to adapt to the domain of project
     - Incredible problem solving skill
-    

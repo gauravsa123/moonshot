@@ -2,6 +2,7 @@
 id: janus-vae-based-exploration-for-process-optimization
 type: project
 title: Janus VAE-Based Exploration for Process Optimization
+short_title: Janus VAE
 aliases:
   - Janus RL explo-VAE
 related:

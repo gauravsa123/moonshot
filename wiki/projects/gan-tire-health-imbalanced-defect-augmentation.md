@@ -2,6 +2,7 @@
 id: gan-tire-health-imbalanced-defect-augmentation
 type: project
 title: GAN Tire Health: Imbalanced Aircraft-Tire Defect Augmentation
+short_title: GAN Tire Health
 aliases:
   - GAN in Tire Health
 related:

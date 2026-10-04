@@ -2,6 +2,7 @@
 id: ai-for-engg-point-cloud
 type: project
 title: Point Cloud Part Constraints
+publication_authorship: user-reported
 aliases:
   - Point Cloud
 related:
@@ -83,6 +84,7 @@ The following contributions and capabilities are user-reported, not independentl
 - [Mentoring a trainee](../skills/mentoring-a-trainee.md) — user-reported. This is recorded separately from the existing Engineering Drawing Agents report about [guiding a junior data scientist](../skills/guiding-a-junior-data-scientist.md).
 - [Project direction and team guidance](../skills/project-direction-and-team-guidance.md), including steering the project to guide the trainee and data scientist — user-reported.
 - [Simplifying complex algorithms for stakeholders](../skills/simplifying-complex-algorithms-for-stakeholders.md) — user-reported.
+- Publication-material authorship — user-reported; the user reports personally authoring the MLDS manuscript.
 
 User-reported outcomes (not skills):
 

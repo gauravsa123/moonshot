@@ -2,6 +2,7 @@
 id: gan-ocr-text-image-generation-and-preprocessing
 type: project
 title: GAN for OCR Text-Image Generation and Preprocessing
+short_title: GAN OCR
 aliases:
   - GAN OCR
 related:

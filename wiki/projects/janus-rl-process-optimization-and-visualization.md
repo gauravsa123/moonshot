@@ -2,6 +2,8 @@
 id: janus-rl-process-optimization-and-visualization
 type: project
 title: Janus Deep RL for Industrial Process Optimization and Visualization
+short_title: Janus Deep RL
+publication_authorship: user-reported
 aliases:
   - Janus RL Publication
 related:
@@ -96,8 +98,9 @@ personal skill or individual implementation contribution.
 
 ## User-reported contributions and outcomes
 
-No personal contributions or outcomes have been user-reported for this
-project.
+| Contribution or outcome | Status | Details |
+|---|---|---|
+| Publication-material authorship | user-reported | The user reports personally authoring the Janus RL publication material. Venue and publication status remain unknown. |
 
 ## Review state
 

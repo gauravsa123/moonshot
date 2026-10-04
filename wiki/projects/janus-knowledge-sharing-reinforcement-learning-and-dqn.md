@@ -2,6 +2,7 @@
 id: janus-knowledge-sharing-reinforcement-learning-and-dqn
 type: project
 title: Janus Knowledge Sharing: Reinforcement Learning and DQN
+short_title: Janus Knowledge Sharing
 aliases:
   - Janus Knowledge Sharing
 related:

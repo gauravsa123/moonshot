@@ -2,6 +2,7 @@
 id: gan-diffusion-models-for-image-generation
 type: project
 title: Conditional Diffusion Models for Image Generation
+short_title: Diffusion Models
 aliases:
   - Diffusion Models
 related:

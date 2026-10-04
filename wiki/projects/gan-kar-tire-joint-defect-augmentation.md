@@ -2,6 +2,7 @@
 id: gan-kar-tire-joint-defect-augmentation
 type: project
 title: GAN KAR Hackathon: Tire-Joint Defect Augmentation
+short_title: GAN Hackathon
 aliases:
   - GAN KAR Defects
 related:

@@ -2,6 +2,8 @@
 id: gan-publication-advanced-gan-for-tire-defect-augmentation
 type: project
 title: GAN Publication: Advanced GAN for Tire-Defect Augmentation
+short_title: GAN Publications
+publication_authorship: user-reported
 aliases:
   - Application of GAN for Reducing Data Imbalance under Limited Dataset
 related:
@@ -101,9 +103,9 @@ implementation ownership, or mastery.
 
 ## User-reported contributions and outcomes
 
-No personal contributions or outcomes have been user-reported specifically for
-this Publication-folder profile. The paper's author listing is source evidence
-of the listing only, not a description of individual work.
+| Contribution or outcome | Status | Details |
+|---|---|---|
+| Publication-material authorship | user-reported | The user reports personally authoring the GAN paper/manuscript. The paper's author listing is source evidence of the listing only, not a description of individual work; acceptance or publication status remains unknown from the available sources. |
 
 ## Review state
 

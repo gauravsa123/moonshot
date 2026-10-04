@@ -236,6 +236,28 @@ def _source_refs(fields: dict[str, list[str] | str], page: Path) -> list[str]:
     return values
 
 
+def _optional_graph_metadata(
+    fields: dict[str, list[str] | str], page: Path, *, project: bool
+) -> dict[str, str]:
+    metadata: dict[str, str] = {}
+    if "short_title" in fields:
+        short_title = fields["short_title"]
+        if not isinstance(short_title, str) or not short_title.strip():
+            raise MapBuildError(
+                f"{page}: short_title must be a non-empty string"
+            )
+        metadata["short_title"] = short_title.strip()
+
+    if "publication_authorship" in fields:
+        publication_authorship = fields["publication_authorship"]
+        if not project or publication_authorship != "user-reported":
+            raise MapBuildError(
+                f"{page}: publication_authorship must be 'user-reported' on a project page"
+            )
+        metadata["publication_authorship"] = publication_authorship
+    return metadata
+
+
 def _load_inventory(root: Path, wiki_root: Path) -> tuple[list[dict], dict[str, dict]]:
     path = wiki_root / "source-inventory.csv"
     if not path.is_file():
@@ -324,7 +346,9 @@ def _parse_skill_list(
     return result
 
 
-def load_wiki(root: Path, *, include_aliases: bool = False) -> dict:
+def load_wiki(
+    root: Path, *, include_aliases: bool = False, include_graph_metadata: bool = False
+) -> dict:
     root = root.resolve()
     wiki_root = root / "wiki"
     projects_dir = wiki_root / "projects"
@@ -357,6 +381,10 @@ def load_wiki(root: Path, *, include_aliases: bool = False) -> dict:
             "unmapped_claims": [],
             "data_quality_notes": [],
         }
+        if include_graph_metadata:
+            project.update(
+                _optional_graph_metadata(fields, page, project=True)
+            )
         seen_sources: set[str] = set()
         for source_ref in _source_refs(fields, page):
             normalized = _resolve_wiki_link(
@@ -394,6 +422,8 @@ def load_wiki(root: Path, *, include_aliases: bool = False) -> dict:
             "path": path,
             "definition": _definition(body, title),
         }
+        if include_graph_metadata:
+            skill.update(_optional_graph_metadata(fields, page, project=False))
         if include_aliases:
             aliases = fields.get("aliases", [])
             if not isinstance(aliases, list) or any(

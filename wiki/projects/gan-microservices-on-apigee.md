@@ -2,6 +2,7 @@
 id: gan-microservices-on-apigee
 type: project
 title: GAN Microservices on APIGEE
+short_title: GAN Service
 aliases:
   - GAN Microservice - Michelin AI Reusable Service
 related:

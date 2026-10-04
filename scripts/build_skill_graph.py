@@ -118,7 +118,9 @@ def load_alias_groups(
 def build_graph_data(root: Path) -> dict[str, Any]:
     """Convert the validated wiki records into shared project/skill nodes."""
     root = root.resolve()
-    wiki_data = load_wiki(root, include_aliases=True)
+    wiki_data = load_wiki(
+        root, include_aliases=True, include_graph_metadata=True
+    )
     skills_by_path = {skill["path"]: skill for skill in wiki_data["skills"]}
     alias_groups = load_alias_groups(
         root / "wiki" / "skill-graph-aliases.json", set(skills_by_path)
@@ -130,14 +132,15 @@ def build_graph_data(root: Path) -> dict[str, Any]:
         path = skill["path"]
         group = alias_groups.get(path)
         graph_id = group["id"] if group else path
-        label = group["label"] if group else skill["title"]
+        short_title = skill.get("short_title", skill["title"])
+        label = group["label"] if group else short_title
         node = skill_nodes_by_id.get(graph_id)
         if node is None:
             node = {
                 "id": graph_id,
                 "type": "skill",
                 "label": label,
-                "title": label,
+                "title": skill["title"],
                 "pages": [],
                 "search_terms": [],
             }
@@ -151,7 +154,9 @@ def build_graph_data(root: Path) -> dict[str, Any]:
                 "href": path,
             }
         )
-        node["search_terms"].extend([skill["title"], *skill["aliases"]])
+        node["search_terms"].extend(
+            [short_title, skill["title"], *skill["aliases"]]
+        )
         if group:
             node["search_terms"].append(group["label"])
         graph_skill_id_by_path[path] = graph_id
@@ -162,11 +167,14 @@ def build_graph_data(root: Path) -> dict[str, Any]:
         project_nodes_by_path[path] = {
             "id": path,
             "type": "project",
-            "label": project["title"],
+            "label": project.get("short_title", project["title"]),
             "title": project["title"],
             "path": path,
             "href": path,
-            "search_terms": [project["title"]],
+            "search_terms": [
+                project.get("short_title", project["title"]),
+                project["title"],
+            ],
             "source_reviews": project["source_reviews"],
             "unmapped_claims": project["unmapped_claims"],
             "data_quality_notes": project["data_quality_notes"],
@@ -178,7 +186,7 @@ def build_graph_data(root: Path) -> dict[str, Any]:
         "user_reported": {"user-reported"},
     }
     edges: list[dict[str, Any]] = []
-    for index, relationship in enumerate(wiki_data["relationships"]):
+    for relationship in wiki_data["relationships"]:
         kind = relationship["kind"]
         status = relationship["status"]
         if kind not in valid_statuses or status not in valid_statuses[kind]:
@@ -198,7 +206,6 @@ def build_graph_data(root: Path) -> dict[str, Any]:
             )
         edges.append(
             {
-                "id": f"edge-{index:05d}",
                 "source": project_path,
                 "target": graph_skill_id_by_path[skill_path],
                 "kind": kind,
@@ -207,6 +214,23 @@ def build_graph_data(root: Path) -> dict[str, Any]:
                 "evidence": relationship["evidence"],
             }
         )
+
+    publication_rationale = (
+        "The user reports personally authoring publication material "
+        "associated with this project."
+    )
+    for project in wiki_data["projects"]:
+        if project.get("publication_authorship") == "user-reported":
+            edges.append(
+                {
+                    "source": "publication-hub",
+                    "target": project["path"],
+                    "kind": "publication_authorship",
+                    "status": "user-reported",
+                    "rationale": publication_rationale,
+                    "evidence": [],
+                }
+            )
 
     edges.sort(
         key=lambda edge: (
@@ -221,7 +245,18 @@ def build_graph_data(root: Path) -> dict[str, Any]:
     for index, edge in enumerate(edges):
         edge["id"] = f"edge-{index:05d}"
 
-    nodes = list(project_nodes_by_path.values()) + list(skill_nodes_by_id.values())
+    publication_node = {
+        "id": "publication-hub",
+        "type": "publication",
+        "label": "Publications",
+        "title": "Publications",
+        "search_terms": ["publications", "publication", "authorship"],
+    }
+    nodes = (
+        list(project_nodes_by_path.values())
+        + list(skill_nodes_by_id.values())
+        + [publication_node]
+    )
     nodes.sort(key=lambda node: (node["type"], node["id"]))
     counts = Counter(edge["kind"] for edge in edges)
     return {
@@ -232,6 +267,7 @@ def build_graph_data(root: Path) -> dict[str, Any]:
             "projects": len(project_nodes_by_path),
             "skill_nodes": len(skill_nodes_by_id),
             "canonical_skills": len(skills_by_path),
+            "publication_nodes": 1,
             "relationships": dict(sorted(counts.items())),
         },
     }
@@ -331,6 +367,7 @@ def main(argv: list[str] | None = None) -> int:
         f"Generated {output_path}: {data['counts']['projects']} projects, "
         f"{data['counts']['canonical_skills']} canonical skills, "
         f"{data['counts']['skill_nodes']} graph skill nodes, "
+        f"{data['counts']['publication_nodes']} publication node, "
         f"{len(data['edges'])} relationships ({relationship_summary})."
     )
     return 0

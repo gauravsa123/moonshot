@@ -2,6 +2,7 @@
 id: gan-api-hackathon-image-preprocessing-service
 type: project
 title: GAN API Hackathon: Image Preprocessing Service
+short_title: GAN API Hackathon
 aliases:
   - Image Preprocessing with State of Art Models
 related:

@@ -2,6 +2,7 @@
 id: agents-browser-use
 type: project
 title: Browser Use and Enterprise Web Automation
+publication_authorship: user-reported
 aliases:
   - RPA Agent
 related:
@@ -80,6 +81,7 @@ The following contributions and outcomes are user-reported, not established by t
 | [Thought leadership in workflow design](../skills/thought-leadership-in-workflow-design.md) | user-reported | The user reports providing thought leadership in workflow design. |
 | [Rapid research paper writing](../skills/rapid-research-paper-writing.md) | user-reported | The user reports rapidly writing up a paper. |
 | [Mentoring and guiding interns in workflow design and implementation](../skills/mentoring-and-guiding-interns-in-workflow-design-and-implementation.md) | user-reported | The user reports mentoring and guiding interns through workflow design and implementation for this project. |
+| Publication authorship | user-reported | The user reports personally authoring both the “Vision-Powered RAG Agents for Organizational Software and Web Operations” and “Enterprise-Ready Web Automation: A Framework for Democratizing the AI Agent” papers. |
 
 ### Outcomes
 

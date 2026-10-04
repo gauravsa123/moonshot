@@ -2,6 +2,8 @@
 id: patents-similarity-and-technology-mapping
 type: project
 title: Patent Similarity and Technology-to-Tire Mapping
+short_title: Patent Similarity
+publication_authorship: user-reported
 aliases:
   - Patent Knowledge Mining
 related:
@@ -100,7 +102,7 @@ implementation responsibility.
 
 | Contribution or outcome | Status | Details |
 |---|---|---|
-| White paper publication | user-reported | The user identified this as a project outcome; publication venue/date and personal role were not specified. |
+| White paper publication and authorship | user-reported | The user reports personally authoring the white paper; publication venue and date remain unspecified. |
 
 ## Review state
 

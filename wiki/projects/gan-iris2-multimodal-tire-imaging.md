@@ -2,6 +2,7 @@
 id: gan-iris2-multimodal-tire-imaging
 type: project
 title: GAN for IRIS2 Multimodal Tire Imaging
+short_title: GAN IRIS2
 aliases:
   - IRIS2 GAN
 related:

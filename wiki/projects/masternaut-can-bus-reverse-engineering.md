@@ -2,6 +2,7 @@
 id: masternaut-can-bus-reverse-engineering
 type: project
 title: Masternaut CAN-Bus Reverse Engineering with Deep Learning
+short_title: CAN-Bus
 aliases:
   - CAN Reversing
 related:

@@ -2,6 +2,7 @@
 id: janus-mvts-transformer-predictive-modeling
 type: project
 title: Janus Multivariate Time-Series Transformers and Predictive Modeling
+short_title: Janus MVTS
 aliases:
   - Janus MVTS
 related:
