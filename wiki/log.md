@@ -676,3 +676,53 @@ Preserve prior entries when appending. Keep source statuses consistent with
 - **Index/inventory:** graph index link and source inventory remain unchanged; source-evidence records and detail data are preserved.
 - **Review:** user approved this visibility behavior. Tests and code reviews were not run at the user's request.
 - **Findings/questions:** none.
+
+## 2026-10-14 — Publications node outer anchor
+
+- **Activity:** moved the Publications hub to a soft outer anchor at the top-center of the graph.
+- **Scope:** the Publications hub and its five user-reported authorship edges.
+- **Pages updated:** regenerated the [AI Skills & Projects graph](skill-graph.html) from `scripts/skill_graph_template.html`.
+- **Presentation:** the hub re-anchors after canvas resizing, retains slight motion under repulsion, and no longer uses its authorship links as springs toward the project cluster. Other nodes keep their existing force-directed movement, and the User-reported toggle still controls hub visibility.
+- **Index/inventory:** the graph index link and source inventory remain unchanged.
+- **Review:** the user approved the soft-anchor behavior. Tests and code reviews were not run at the user's request.
+- **Findings/questions:** none.
+
+## 2026-10-14 — Publications hub right-side placement
+
+- **Activity:** repositioned the soft-anchored Publications hub to the right edge, vertically centered.
+- **Scope:** the Publications hub and its five user-reported authorship edges.
+- **Pages updated:** regenerated the [AI Skills & Projects graph](skill-graph.html) from `scripts/skill_graph_template.html`.
+- **Presentation:** the hub remains soft-anchored and slightly fluid; its label faces inward so it stays within the canvas. Existing links and User-reported filter behavior are unchanged.
+- **Index/inventory:** the graph index link and source inventory remain unchanged.
+- **Review:** the user requested this position. Tests and code reviews were not run at the user's request.
+- **Findings/questions:** none.
+
+## 2026-10-14 — Project node spacing
+
+- **Activity:** added a gentle outward bias to project nodes to reduce crowding near the graph center.
+- **Scope:** project-node force behavior in the skill graph.
+- **Pages updated:** regenerated the [AI Skills & Projects graph](skill-graph.html) from `scripts/skill_graph_template.html`.
+- **Presentation:** project nodes retain the existing force-directed layout with a small outward component; all other node types, relationships, filters, and the Publications anchor are unchanged.
+- **Index/inventory:** the graph index link and source inventory remain unchanged.
+- **Review:** the user approved this spacing behavior. Tests and code reviews were not run at the user's request.
+- **Findings/questions:** none.
+
+## 2026-10-14 — Reset selection button
+
+- **Activity:** added a toolbar button for clearing graph selection.
+- **Scope:** graph selection, keyboard focus, hover and neighbor highlights, and the detail panel's welcome state.
+- **Pages updated:** regenerated the [AI Skills & Projects graph](skill-graph.html) from `scripts/skill_graph_template.html`.
+- **Presentation:** the Reset selection button and Escape key share the same reset behavior. Search, relationship filters, zoom, and pan remain unchanged.
+- **Index/inventory:** the graph index link and source inventory remain unchanged.
+- **Review:** the user approved the behavior. Tests and code reviews were not run at the user's request.
+- **Findings/questions:** none.
+
+## 2026-10-14 — Reset selection button styling
+
+- **Activity:** gave the Reset selection button a theme-aware light-blue appearance.
+- **Scope:** reset button foreground, background, border, and hover colors only.
+- **Pages updated:** regenerated the [AI Skills & Projects graph](skill-graph.html) from `scripts/skill_graph_template.html`.
+- **Presentation:** the button uses blue-tinted colors with readable text in light and dark themes; other controls and reset behavior are unchanged.
+- **Index/inventory:** the graph index link and source inventory remain unchanged.
+- **Review:** the user approved the styling. Tests and code reviews were not run at the user's request.
+- **Findings/questions:** none.

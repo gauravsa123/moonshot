@@ -23,6 +23,10 @@
   --user: #16845a;
   --requirement: #c06a18;
   --focus: #155eef;
+  --reset-bg: #e4f1ff;
+  --reset-border: #afcfee;
+  --reset-ink: #174b7a;
+  --reset-hover: #d5e9ff;
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -42,6 +46,10 @@
     --user: #52d49b;
     --requirement: #ffb454;
     --focus: #82b1ff;
+    --reset-bg: #223b5a;
+    --reset-border: #42688f;
+    --reset-ink: #d9eaff;
+    --reset-hover: #2d4c70;
   }
 }
 * { box-sizing: border-box; }
@@ -118,6 +126,12 @@ input[type="search"] {
   background: var(--panel);
   font-size: .86rem;
 }
+#reset-selection {
+  color: var(--reset-ink);
+  border-color: var(--reset-border);
+  background: var(--reset-bg);
+}
+#reset-selection:hover { background: var(--reset-hover); }
 .drop-zone {
   display: grid;
   grid-template-columns: 1fr auto;
@@ -279,6 +293,7 @@ input[type="search"] {
       <label><input type="checkbox" name="requirement" checked> Project requirements</label>
     </fieldset>
     <div class="small muted" id="match-status" aria-live="polite"></div>
+    <button id="reset-selection" type="button">Reset selection</button>
   </section>
   <div class="workspace">
     <section class="panel graph-panel" aria-label="Skills, projects, and publications network">
@@ -316,6 +331,7 @@ const canvas = document.getElementById("graph");
 const ctx = canvas.getContext("2d");
 const searchInput = document.getElementById("search");
 const matchStatus = document.getElementById("match-status");
+const resetSelectionButton = document.getElementById("reset-selection");
 const detail = document.getElementById("detail");
 const filters = Object.fromEntries(
   [...document.querySelectorAll(".filters input")].map(input => [input.name, input])
@@ -354,6 +370,10 @@ function hashText(text) {
   return hash >>> 0;
 }
 
+function publicationAnchorPoint() {
+  return {x: width - 24, y: height / 2};
+}
+
 function sizeCanvas() {
   const rect = canvas.getBoundingClientRect();
   const oldWidth = width || rect.width;
@@ -376,6 +396,14 @@ function sizeCanvas() {
   } else {
     panX += (width - oldWidth) / 2;
     panY += (height - oldHeight) / 2;
+  }
+  const publicationNode = nodeById.get("publication-hub");
+  if (publicationNode) {
+    const anchor = publicationAnchorPoint();
+    publicationNode.x = anchor.x;
+    publicationNode.y = anchor.y;
+    publicationNode.vx = 0;
+    publicationNode.vy = 0;
   }
   alpha = Math.max(alpha, .35);
 }
@@ -478,6 +506,7 @@ function forceTick() {
     }
   }
   for (const edge of activeEdges) {
+    if (edge.kind === "publication_authorship") continue;
     const a = edge.sourceNode;
     const b = edge.targetNode;
     if (!a || !b) continue;
@@ -493,8 +522,20 @@ function forceTick() {
     b.vy -= fy;
   }
   for (const node of activeNodes) {
-    node.vx += (width / 2 - node.x) * .0004 * alpha;
-    node.vy += (height / 2 - node.y) * .0004 * alpha;
+    if (node.type === "publication") {
+      const anchor = publicationAnchorPoint();
+      node.vx += (anchor.x - node.x) * .006;
+      node.vy += (anchor.y - node.y) * .006;
+    } else {
+      const centerX = width / 2;
+      const centerY = height / 2;
+      if (node.type === "project") {
+        node.vx += (node.x - centerX) * .00008 * alpha;
+        node.vy += (node.y - centerY) * .00008 * alpha;
+      }
+      node.vx += (centerX - node.x) * .0004 * alpha;
+      node.vy += (centerY - node.y) * .0004 * alpha;
+    }
     node.vx *= .82;
     node.vy *= .82;
     node.x += node.vx;
@@ -543,10 +584,11 @@ function drawNode(node, focused, matches, counts, style) {
     || node.id === hoveredId || node.id === selectedId || matches || zoomed) {
     const text = node.label.length > 30 ? `${node.label.slice(0, 28)}...` : node.label;
     ctx.font = `${node.id === selectedId ? 650 : 500} 11px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
-    ctx.textAlign = "left";
+    const anchoredRight = node.type === "publication";
+    ctx.textAlign = anchoredRight ? "right" : "left";
     ctx.textBaseline = "middle";
     ctx.fillStyle = style.getPropertyValue("--ink").trim();
-    ctx.fillText(text, node.x + radius + 5, node.y);
+    ctx.fillText(text, anchoredRight ? node.x - radius - 5 : node.x + radius + 5, node.y);
   }
   ctx.shadowBlur = 0;
   ctx.globalAlpha = 1;
@@ -987,6 +1029,15 @@ function handleWheel(event) {
   draw();
 }
 
+function resetSelection() {
+  selectedId = null;
+  keyboardFocusId = null;
+  hoveredId = null;
+  updateFocusNeighbors(null);
+  renderWelcome();
+  draw();
+}
+
 function handleGraphKey(event) {
   if (event.key === "Enter") {
     const target = keyboardFocusId || hoveredId || selectedId;
@@ -997,12 +1048,7 @@ function handleGraphKey(event) {
     return;
   }
   if (event.key === "Escape") {
-    selectedId = null;
-    keyboardFocusId = null;
-    hoveredId = null;
-    updateFocusNeighbors(null);
-    renderWelcome();
-    draw();
+    resetSelection();
     return;
   }
   const direction = ["ArrowRight", "ArrowDown"].includes(event.key) ? 1
@@ -1571,6 +1617,7 @@ function resize() {
 }
 
 searchInput.addEventListener("input", updateSearch);
+resetSelectionButton.addEventListener("click", resetSelection);
 for (const input of Object.values(filters)) {
   input.addEventListener("change", refreshFocus);
 }

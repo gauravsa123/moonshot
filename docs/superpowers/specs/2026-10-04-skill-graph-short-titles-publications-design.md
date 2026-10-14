@@ -43,6 +43,14 @@ existing project nodes without overstating source evidence or authorship.
   that those toggles would otherwise hide. Search and selection may still show
   an individual node without making its evidence edges visible. Source
   evidence remains in graph data and node details; do not alter its provenance.
+- Keep the Publications hub at a soft outer anchor on the right side of the
+  graph, vertically centered. Its label should face inward to stay visible.
+  Its authored-work links remain drawn, but do not use those links as
+  springs that pull it back into the project cluster. Let the hub drift
+  slightly under graph forces while a restoring force returns it to the
+  anchor; reposition the anchor with the canvas on resize. Other nodes retain
+  their existing force-directed movement and the hub retains its existing
+  User-reported filter behavior.
 
 ## Data flow and scope
 
@@ -81,3 +89,5 @@ source inventory, and source review states remain unchanged. No files under
   a legend marker distinct from the amber dashed requirement-edge marker.
 - Source-evidence edges appear only between nodes surfaced by the remaining
   toggles; source-only nodes can still be reached through search or selection.
+- The Publications hub stays on the outer right side, retains its links,
+  moves slightly rather than being rigidly pinned, and re-anchors on resize.
